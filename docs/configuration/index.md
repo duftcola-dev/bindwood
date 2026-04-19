@@ -1,0 +1,43 @@
+# Configuration
+
+bindwood is driven by a single JSON config file. It specifies global settings (Ollama, database path) and a list of **targets** — one per codebase or DDL file you want to extract.
+
+## Structure
+
+```json
+{
+  "version": 1,
+  "ollama":   { "url": "...", "model": "..." },
+  "database": { "path": "graph/code_graph.db" },
+  "targets": [
+    { "type": "ddl",        "name": "...", ... },
+    { "type": "javascript", "name": "...", ... },
+    { "type": "typescript", "name": "...", ... },
+    { "type": "python",     "name": "...", ... }
+  ]
+}
+```
+
+You can also pass a single-target JSON file (legacy format) — the tool auto-detects it.
+
+## Reference
+
+<div class="grid cards" markdown>
+
+- :material-tune: **[Global Config](global.md)** — top-level settings: Ollama, database path.
+- :material-database: **[DDL Targets](ddl-targets.md)** — extract schemas from `.sql` files.
+- :material-language-typescript: **[JS/TS Targets](jsts-targets.md)** — the main extractor, with labels, resolver, visitors.
+
+</div>
+
+## Where config is loaded from
+
+You shouldn't need to know this in normal use — the CLI (`bindwood init`, `bindwood add`, `bindwood delete`) always writes to the canonical user config dir. The resolver chain is:
+
+1. Explicit `--config` passed to library callers
+2. `BINDWOOD_CONFIG` environment variable
+3. User config dir (`%APPDATA%\bindwood\config.json` on Windows, `$XDG_CONFIG_HOME/bindwood/config.json` elsewhere) — **the canonical location**
+4. `./bindwood.json` in the current directory (useful for repo-local overrides)
+5. Legacy default `bindwood/config/config.json` (source checkouts)
+
+Legacy `GTG_CONFIG` / `gtg.json` are still accepted for one deprecation cycle.

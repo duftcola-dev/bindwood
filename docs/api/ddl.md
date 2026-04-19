@@ -1,0 +1,3 @@
+# `bindwood.ddl`
+
+::: bindwood.ddl

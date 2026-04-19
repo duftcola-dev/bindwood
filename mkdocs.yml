@@ -1,0 +1,142 @@
+site_name: bindwood
+site_description: Tree-sitter-based static analysis that turns codebases into a queryable graph + vector index, exposed to LLMs via MCP.
+site_author: bindwood
+repo_url: https://github.com/your-org/bindwood
+repo_name: bindwood
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.instant
+    - navigation.tracking
+    - navigation.indexes
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/graph-outline
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.keys
+  - pymdownx.tilde
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            members_order: source
+            separate_signature: true
+            merge_init_into_class: true
+            docstring_section_style: table
+            filters: ["!^_"]
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quickstart.md
+  - Configuration:
+      - Overview: configuration/index.md
+      - Global Config: configuration/global.md
+      - DDL Targets: configuration/ddl-targets.md
+      - JS/TS Targets: configuration/jsts-targets.md
+  - Extractors:
+      - Pipeline: extractors/pipeline.md
+      - Label Patterns: extractors/label-patterns.md
+      - Output Format: extractors/output-format.md
+      - Alias Resolution: extractors/alias-resolution.md
+  - Database:
+      - Pipeline: database/pipeline.md
+      - SQLite Schema: database/schema.md
+      - Embeddings: database/embeddings.md
+  - CLI:
+      - Query Reference: cli/query.md
+      - Examples: cli/examples.md
+  - MCP Server:
+      - Setup: mcp/setup.md
+      - Tools: mcp/tools.md
+      - Claude Workflow: mcp/workflow.md
+  - Visualization:
+      - Overview: viz/index.md
+  - API Reference:
+      - Overview: api/index.md
+      - bindwood.cli: api/cli.md
+      - bindwood.scan: api/scan.md
+      - bindwood.db: api/db.md
+      - bindwood.ddl: api/ddl.md
+      - bindwood.jsts: api/jsts.md
+      - bindwood.python: api/python.md
+      - bindwood.servers: api/servers.md
+  - Troubleshooting: troubleshooting.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/your-org/bindwood
+  version:
+    provider: mike
+
+copyright: Copyright &copy; 2026 bindwood contributors

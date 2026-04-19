@@ -1,0 +1,82 @@
+# Query Examples
+
+End-to-end examples for the most common query workflows.
+
+## Semantic search — find code by meaning
+
+```bash
+# Authentication-related code
+bindwood query search "user authentication login permissions"
+
+# Restrict to the backend target
+bindwood query search "database connection pooling" --target hub4retail-backend
+
+# Product catalog logic, fewer results
+bindwood query search "product catalog pricing" --limit 5
+```
+
+## Structured lookup — find nodes by attributes
+
+```bash
+# All functions named "login" across all targets
+bindwood query find --type function --name login
+
+# All HTTP route calls in the backend
+bindwood query find --type call --label http_route --target hub4retail-backend
+
+# All tables with "product" in the name
+bindwood query find --type table --name product
+
+# All functions in a specific file
+bindwood query find --type function --file "user.actions.ts"
+```
+
+## Node detail — read source code
+
+```bash
+# Full details of a specific function
+bindwood query node "func::applications/main/interface/user.js::User.login"
+
+# Partial match also works
+bindwood query node "User.login"
+```
+
+## Graph traversal — explore relationships
+
+```bash
+# What tables does the product table reference? What references it?
+bindwood query neighbors "table::product"
+
+# What does a file contain/import?
+bindwood query neighbors "file::applications/main/interface/user.js"
+```
+
+## Context search — semantic + structural
+
+```bash
+# Find order processing code and show what it connects to
+bindwood query context "database access for orders" --limit 3
+```
+
+## Slice — subgraph around a node
+
+```bash
+# All nodes reachable within 2 hops of this file
+bindwood query slice "file::src/index.ts" --depth 2
+```
+
+## Raw SQL — anything custom
+
+```bash
+# Count functions per target
+bindwood query sql "SELECT target, COUNT(*) FROM nodes WHERE type='function' GROUP BY target"
+
+# All db_access labeled calls
+bindwood query sql "SELECT name, file, line FROM nodes WHERE properties LIKE '%db_access%' LIMIT 20"
+
+# Tables with the most foreign key references
+bindwood query sql "SELECT target_node, COUNT(*) AS refs
+               FROM edges WHERE type='fk'
+               GROUP BY target_node
+               ORDER BY refs DESC LIMIT 10"
+```

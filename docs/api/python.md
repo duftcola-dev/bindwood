@@ -1,0 +1,3 @@
+# `bindwood.python`
+
+::: bindwood.python

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}bindwood — overview{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Targets</h2>
+    {% if targets %}
+        <p style="color: var(--muted); margin-top: 0;">
+            Pick a target to explore. Each view answers a different question.
+        </p>
+        {% for t in targets %}
+            <a class="target-link" href="/viz/{{ t.name }}/graph">{{ t.name }} <span style="opacity:0.6">({{ t.type }})</span></a>
+        {% endfor %}
+    {% else %}
+        <p>No targets found. Run <code>gtg scan</code> first.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>Database overview</h2>
+    <table>
+        <tr><th>Total nodes</th><td>{{ overview.total_nodes }}</td></tr>
+        <tr><th>Nodes with source text</th><td>{{ overview.nodes_with_source_text }}</td></tr>
+        <tr><th>Nodes with summary</th><td>{{ overview.nodes_with_summary }}</td></tr>
+        <tr><th>Nodes with embeddings</th><td>{{ overview.nodes_with_embeddings }}</td></tr>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Nodes by type</h2>
+    <table>
+        <tr><th>Type</th><th>Count</th></tr>
+        {% for type, count in overview.node_counts_by_type.items() %}
+            <tr><td>{{ type }}</td><td>{{ count }}</td></tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}bindwood — {{ target }} — {{ tab }}{% endblock %}
+
+{% block subnav %}
+<nav class="tabs">
+    <a href="/viz/">&larr; Targets</a>
+    <span style="padding:10px 16px; color: var(--muted); font-size: 14px;">{{ target }}</span>
+    <a href="/viz/{{ target }}/graph"   class="{% if tab == 'graph'   %}active{% endif %}">Graph</a>
+    <a href="/viz/{{ target }}/treemap" class="{% if tab == 'treemap' %}active{% endif %}">Skeleton</a>
+    <a href="/viz/{{ target }}/heatmap" class="{% if tab == 'heatmap' %}active{% endif %}">Labels</a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    {{ plot | safe }}
+</div>
+{% endblock %}

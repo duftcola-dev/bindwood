@@ -1,0 +1,3 @@
+# `bindwood.cli`
+
+::: bindwood.cli

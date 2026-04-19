@@ -1,0 +1,3 @@
+# `bindwood.scan`
+
+::: bindwood.scan
