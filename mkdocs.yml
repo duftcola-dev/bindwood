@@ -1,13 +1,15 @@
 site_name: bindwood
 site_description: Tree-sitter-based static analysis that turns codebases into a queryable graph + vector index, exposed to LLMs via MCP.
 site_author: bindwood
-repo_url: https://github.com/your-org/bindwood
+repo_url: https://github.com/duftcola-dev/bindwood
 repo_name: bindwood
 edit_uri: edit/main/docs/
 
 theme:
   name: material
   language: en
+  logo: assets/logo.png
+  favicon: assets/favicon.png
   features:
     - navigation.tabs
     - navigation.tabs.sticky
@@ -24,24 +26,28 @@ theme:
     - content.code.copy
     - content.code.annotate
     - content.tabs.link
+    - header.autohide
+    - announce.dismiss
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
-      accent: indigo
+      primary: brown
+      accent: deep-orange
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: brown
+      accent: deep-orange
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
   icon:
     repo: fontawesome/brands/github
-    logo: material/graph-outline
 
 markdown_extensions:
   - admonition
@@ -103,6 +109,7 @@ nav:
       - Global Config: configuration/global.md
       - DDL Targets: configuration/ddl-targets.md
       - JS/TS Targets: configuration/jsts-targets.md
+      - Python Targets: configuration/python-targets.md
   - Extractors:
       - Pipeline: extractors/pipeline.md
       - Label Patterns: extractors/label-patterns.md
@@ -135,8 +142,6 @@ nav:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/your-org/bindwood
-  version:
-    provider: mike
+      link: https://github.com/duftcola-dev/bindwood
 
 copyright: Copyright &copy; 2026 bindwood contributors

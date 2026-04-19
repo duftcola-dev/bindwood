@@ -5,9 +5,9 @@
 - **Python >= 3.10**
 - **[uv](https://docs.astral.sh/uv/)** — package manager (recommended)
 
-Optional, for embeddings:
+Optional, for embeddings and summaries:
 
-- **[Ollama](https://ollama.ai/)** running locally with an embedding model pulled
+- **[Ollama](https://ollama.ai/)** running locally with the models below pulled
 
 ## Dependencies
 
@@ -50,18 +50,24 @@ The CLI is installed as `bindwood`; you can also invoke it via `python -m bindwo
 bindwood --help
 ```
 
-You should see the top-level commands: `init`, `add`, `list`, `delete`, `apikey`, `scan`, `query`, `mcp`, `serve`, `ollama-status`.
+You should see the top-level commands: `init`, `add`, `list`, `delete`, `apikey`, `scan`, `query`, `mcp`, `serve`, `doctor`.
 
 ## Install Ollama (optional)
 
-Embeddings are optional but highly recommended — semantic search is what makes bindwood more than just a graph.
+Ollama powers two independent features. Neither is required for the structural graph to build, but both are recommended.
+
+| Model | Purpose | If missing |
+|-------|---------|------------|
+| `nomic-embed-text` | Vector embeddings — enables `search_code` and `context` queries | Semantic search unavailable; structural queries still work |
+| `gemma4:e4b` | Per-node summaries shown in query output and search results | Summaries skipped; everything else still works |
 
 ```bash
 # https://ollama.ai/download
 ollama pull nomic-embed-text
+ollama pull gemma4:e4b
 ```
 
-The pipeline auto-pulls the configured model if it's missing, so this step is optional in practice.
+Both models are auto-pulled during `bindwood scan` if missing and Ollama is reachable. Pull them manually beforehand to avoid the delay on first scan.
 
-!!! warning "Use an embedding model, not a generative model"
-    Generative models (Qwen, Llama, etc.) cannot produce useful embeddings. See [Embeddings → Ollama Setup](../database/embeddings.md#ollama-setup) for the recommended list.
+!!! warning "Use an embedding model for embeddings"
+    `nomic-embed-text` is an embedding model. Do not replace it with a generative model (Qwen, Llama, etc.) — generative models cannot produce useful embeddings. See [Embeddings → Ollama Setup](../database/embeddings.md#ollama-setup) for alternatives.

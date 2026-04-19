@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE.md" }
 authors = [
-    { name = "Robin Viera Acosta", email = "robinviera@hotmail.com" },
+    { name = "Robin Viera Acosta", email = "duftcola-dev@hotmail.com" },
 ]
 keywords = ["code-graph", "static-analysis", "tree-sitter", "mcp", "llm", "embeddings"]
 classifiers = [
@@ -26,6 +26,7 @@ dependencies = [
     "blessed>=1.38.0",
     "click>=8.3.2",
     "mcp>=1.27.0",
+    "mkdocs>=1.6.1",
     "python-dotenv>=1.2.2",
     "sqlglot>=30.2.1",
     "sqlite-vec>=0.1.9",
@@ -56,9 +57,9 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/robinviera/bindwood"
-Documentation = "https://github.com/robinviera/bindwood#readme"
-Issues = "https://github.com/robinviera/bindwood/issues"
+Homepage = "https://github.com/duftcola-dev/bindwood"
+Documentation = "https://github.com/duftcola-dev/bindwood#readme"
+Issues = "https://github.com/duftcola-dev/bindwood/issues"
 
 [project.scripts]
 bindwood = "bindwood.cli:main"
