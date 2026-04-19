@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/logo.png" alt="bindwood" width="120" />
+  <img src="docs/assets/logo.png" alt="bindwood" width="20%" />
 </p>
 
 <h1 align="center">bindwood</h1>
