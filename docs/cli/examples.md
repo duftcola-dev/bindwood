@@ -61,22 +61,22 @@ bindwood query context "database access for orders" --limit 3
 ## Slice — subgraph around a node
 
 ```bash
-# All nodes reachable within 2 hops of this file
+# All nodes reachable within 2 hops of this file (following outgoing edges)
 bindwood query slice "file::src/index.ts" --depth 2
+
+# Follow only import edges, both directions, up to 3 hops
+bindwood query slice "file::src/index.ts" --depth 3 --direction both --edge-kinds imports
+
+# Multiple seeds at once; emit raw JSON
+bindwood query slice "file::src/auth.ts" "file::src/middleware.ts" --json
 ```
 
-## Raw SQL — anything custom
+## Trace — how two nodes connect
 
 ```bash
-# Count functions per target
-bindwood query sql "SELECT target, COUNT(*) FROM nodes WHERE type='function' GROUP BY target"
+# Find the path from one file to another through the import graph
+bindwood query trace "file::src/api/routes.ts" "file::src/db/queries.ts"
 
-# All db_access labeled calls
-bindwood query sql "SELECT name, file, line FROM nodes WHERE properties LIKE '%db_access%' LIMIT 20"
-
-# Tables with the most foreign key references
-bindwood query sql "SELECT target_node, COUNT(*) AS refs
-               FROM edges WHERE type='fk'
-               GROUP BY target_node
-               ORDER BY refs DESC LIMIT 10"
+# Increase search depth for distant nodes
+bindwood query trace "func::...::validateOrder" "table::orders" --max-depth 5
 ```

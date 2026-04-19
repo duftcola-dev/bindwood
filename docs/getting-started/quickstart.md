@@ -37,23 +37,34 @@ bindwood delete my-target
 bindwood scan
 ```
 
-This runs three phases:
+This runs four phases:
 
 1. **Extract** — tree-sitter / sqlglot parse every configured target into a graph JSON
 2. **Load** — rebuild `graph/code_graph.db` from the JSON graphs
-3. **Embed** — send `source_text` to Ollama, store vectors in `sqlite-vec`
+3. **Summarise** — call the auxiliary model (`gemma4:e4b` by default) to write a one-line summary for each node
+4. **Embed** — call the embedding model (`nomic-embed-text` by default) and store vectors in `sqlite-vec`
 
-Skip embeddings if Ollama isn't available:
+The two Ollama models serve distinct roles and fail independently:
+
+| Model | Role | If unavailable |
+|-------|------|---------------|
+| `nomic-embed-text` | Produces vector embeddings — required for `search_code` and `context` queries | Embeddings are skipped; structural queries (`find`, `neighbors`, `slice`) still work |
+| `gemma4:e4b` | Generates per-node summaries shown in query output and search results | Summaries are skipped; everything else still works |
+
+Pull both models before scanning for the full experience:
 
 ```bash
-bindwood scan --no-embeddings
+ollama pull nomic-embed-text
+ollama pull gemma4:e4b
 ```
 
-Scan only a specific target:
+Pass `--verbose` / `-v` to print full tracebacks on error:
 
 ```bash
-bindwood scan --target my-app
+bindwood scan --verbose
 ```
+
+Run `bindwood doctor` to check both models and the rest of your setup in one go.
 
 !!! warning "Ollama watchdog"
     Every `bindwood` command prints a `[warn]` line to stderr if Ollama isn't reachable at the configured URL. Embeddings and summaries are silently skipped in that case — the structural graph still builds.
@@ -70,15 +81,27 @@ bindwood query slice "file::src/index.ts" --depth 2
 
 Full command reference: [CLI → Query Reference](../cli/query.md).
 
-## 4. Start the MCP server
+## 4. Wire up the MCP server
 
-Expose the graph as MCP tools Claude can call:
+`bindwood mcp` is a **stdio MCP server** — you never run it manually. Claude Code spawns it automatically using the command you register in its settings:
 
-```bash
-bindwood mcp
+```json title=".claude/settings.local.json"
+{
+  "mcpServers": {
+    "code-graph": {
+      "command": "bindwood",
+      "args": ["mcp"],
+      "env": {
+        "BINDWOOD_DB": "/absolute/path/to/graph/code_graph.db"
+      }
+    }
+  }
+}
 ```
 
-Then wire it into Claude Code — see [MCP Server → Setup](../mcp/setup.md).
+After saving the file and restarting Claude Code, the tools appear automatically. You can run `bindwood mcp` directly in a terminal only as a smoke-test to confirm the server starts without errors.
+
+Full setup options and verification steps: [MCP Server → Setup](../mcp/setup.md).
 
 ## 5. (Optional) HTTP server
 

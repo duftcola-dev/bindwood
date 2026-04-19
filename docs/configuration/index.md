@@ -7,7 +7,11 @@ bindwood is driven by a single JSON config file. It specifies global settings (O
 ```json
 {
   "version": 1,
-  "ollama":   { "url": "...", "model": "..." },
+  "ollama": {
+    "url": "http://localhost:11434",
+    "embedding_model": "nomic-embed-text",
+    "auxiliary_model": "gemma4:e4b"
+  },
   "database": { "path": "graph/code_graph.db" },
   "targets": [
     { "type": "ddl",        "name": "...", ... },
@@ -24,9 +28,10 @@ You can also pass a single-target JSON file (legacy format) — the tool auto-de
 
 <div class="grid cards" markdown>
 
-- :material-tune: **[Global Config](global.md)** — top-level settings: Ollama, database path.
+- :material-tune: **[Global Config](global.md)** — top-level settings: Ollama, database path, API key.
 - :material-database: **[DDL Targets](ddl-targets.md)** — extract schemas from `.sql` files.
 - :material-language-typescript: **[JS/TS Targets](jsts-targets.md)** — the main extractor, with labels, resolver, visitors.
+- :material-language-python: **[Python Targets](python-targets.md)** — extract graphs from Python codebases.
 
 </div>
 

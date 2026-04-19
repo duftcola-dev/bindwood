@@ -1,6 +1,21 @@
-# bindwood
+<p align="center">
+  <img src="docs/assets/logo.png" alt="bindwood" width="20%" />
+</p>
 
-**Tree-sitter-based static analysis that turns codebases into a queryable graph + vector index, exposed to LLMs via MCP.**
+<h1 align="center">bindwood</h1>
+
+<p align="center">
+  <strong>Tree-sitter-based static analysis that turns codebases into a queryable graph + vector index, exposed to LLMs via MCP.</strong>
+</p>
+
+<p align="center">
+  <a href="https://pypi.org/project/bindwood/"><img src="https://img.shields.io/pypi/v/bindwood?color=brown&label=PyPI" alt="PyPI version"></a>
+  <a href="https://pypi.org/project/bindwood/"><img src="https://img.shields.io/pypi/pyversions/bindwood?color=brown" alt="Python versions"></a>
+  <a href="https://github.com/duftcola-dev/bindwood/blob/main/LICENSE"><img src="https://img.shields.io/github/license/duftcola-dev/bindwood?color=brown" alt="License"></a>
+  <a href="https://github.com/duftcola-dev/bindwood/stargazers"><img src="https://img.shields.io/github/stars/duftcola-dev/bindwood?style=flat&color=brown" alt="Stars"></a>
+</p>
+
+---
 
 bindwood parses source files into ASTs and produces a graph of **nodes** (files, functions, classes, calls, exports, types, tables, views) and **edges** (imports, contains, exports, extends, FK relationships). The graph is enriched with **source code text** and **vector embeddings** (via Ollama), then stored in a single SQLite file.
 
@@ -50,7 +65,7 @@ To serve it locally:
 
 ```bash
 pip install "bindwood[docs]"
-mkdocs serve
+uv run mkdocs serve
 # → http://127.0.0.1:8000
 ```
 

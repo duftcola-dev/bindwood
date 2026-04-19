@@ -11,7 +11,8 @@ The MCP server exposes the following tools.
 | `find_nodes` | Structured lookup by type, name, file, label. | When you know what you're looking for. |
 | `get_node_detail` | Full node info including source code text. | Read the actual implementation. |
 | `get_neighbors` | Graph traversal: edges in/out of a node. | Understand structural relationships. |
-| `trace_path` | BFS path finding between two nodes (up to 5 hops). | *"How does A connect to B?"* |
+| `slice_graph` | BFS transitive closure around seed nodes. | *"What does this module pull in?"* |
+| `trace_path` | BFS path finding between two nodes. | *"How does A connect to B?"* |
 | `get_table_schema` | DDL table details: columns, PKs, FKs, related tables. | Database schema exploration. |
 
 ---
@@ -82,13 +83,41 @@ Graph traversal.
 
 ---
 
+## `slice_graph`
+
+```text
+slice_graph(
+  seeds: list[str],
+  depth: int = 2,
+  direction: str = "out",
+  edge_kinds: list[str] | None = None,
+  max_nodes: int = 200,
+  target: str | None = None
+) -> JSON
+```
+
+BFS transitive closure starting from one or more seed nodes. Useful for understanding the full dependency footprint of a module or function.
+
+**Parameters**
+
+- `seeds` — List of node IDs (full or partial) to start the traversal from.
+- `depth` — Max hops (default 2).
+- `direction` — `"out"` (dependencies), `"in"` (dependents), or `"both"`.
+- `edge_kinds` — Restrict traversal to specific edge types: `imports`, `exports`, `contains`, `fk`, `depends_on`, `extends`.
+- `max_nodes` — Hard cap to prevent run-away traversals (default 200).
+- `target` — Filter seed resolution to a specific target.
+
+**Returns** — `{ seeds[], nodes[], edges[], stats{ node_count, edge_count, max_depth_reached }, truncated }`.
+
+---
+
 ## `trace_path`
 
 ```text
 trace_path(from_node, to_node, from_target, to_target, max_depth = 3) -> JSON
 ```
 
-BFS path finding between two nodes.
+BFS path finding between two nodes. Searches up to `max_depth` hops (default 3; increase for distant nodes).
 
 **Returns** — `{ found: bool, hops: int, path: [...] }` with each step showing the node and edge traversed.
 
