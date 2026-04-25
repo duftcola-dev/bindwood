@@ -30,6 +30,7 @@ from bindwood.config.resolver import (
     user_config_path,
 )
 from bindwood.scan import init as scan_targets
+from bindwood.scan import rescan as rescan_target
 
 
 # ── Config file helpers ──────────────────────────────────────
@@ -106,9 +107,51 @@ def cli() -> None:
 # ── Config management (top-level, writes to user config dir) ─
 
 
-def _prompt_ddl_target() -> dict:
-    name = click.prompt("  Target name", type=str)
-    file_path = click.prompt("  Path to DDL/SQL file", type=click.Path())
+def _select_target(targets: list[dict], action: str) -> str:
+    """Interactive numbered selector that scales to large target lists.
+
+    Prints a numbered vertical list grouped by type, then reads a line
+    accepting either a 1-based index or the exact target name. Re-prompts
+    on invalid input. Much friendlier than ``click.Choice`` once you have
+    more than a handful of targets (Click inlines every choice into the
+    prompt string, which overflows the terminal).
+    """
+    names = [t.get("name", "") for t in targets if t.get("name")]
+    click.echo("\nExisting targets:")
+    for i, t in enumerate(targets, 1):
+        ttype = t.get("type", "?")
+        name = t.get("name", "?")
+        click.echo(f"  {i:>3}. [{ttype}] {name}")
+
+    while True:
+        raw = click.prompt(
+            f"\nSelect target to {action} (number or name)",
+            type=str,
+        ).strip()
+        if raw.isdigit():
+            idx = int(raw) - 1
+            if 0 <= idx < len(names):
+                return names[idx]
+            click.echo(f"  Out of range — pick 1-{len(names)}.")
+            continue
+        if raw in names:
+            return raw
+        click.echo(f"  No target named '{raw}'. Try again.")
+
+
+def _prompt_ddl_target(current: dict | None = None) -> dict:
+    cur = current or {}
+    if current is not None:
+        name = cur.get("name", "")
+        click.echo(f"  Target name: {name} (fixed in edit mode)")
+    else:
+        name = click.prompt("  Target name", type=str)
+    file_path = click.prompt(
+        "  Path to DDL/SQL file",
+        type=click.Path(),
+        default=cur.get("file"),
+        show_default=bool(cur.get("file")),
+    )
     path = Path(file_path)
     if not path.exists():
         click.echo(f"  Warning: file not found: {path.resolve()}")
@@ -116,12 +159,15 @@ def _prompt_ddl_target() -> dict:
             raise click.Abort()
     dialect = click.prompt(
         "  SQL dialect",
-        default="postgres",
+        default=cur.get("dialect", "postgres"),
         type=click.Choice(
             ["postgres", "mysql", "sqlite", "bigquery", "tsql"], case_sensitive=False
         ),
     )
-    output = click.prompt("  Output graph path", default=f"graph/ddl_{name}_graph.json")
+    output = click.prompt(
+        "  Output graph path",
+        default=cur.get("output", f"graph/ddl_{name}_graph.json"),
+    )
     return {
         "type": "ddl",
         "name": name,
@@ -131,9 +177,19 @@ def _prompt_ddl_target() -> dict:
     }
 
 
-def _prompt_python_target() -> dict:
-    name = click.prompt("  Target name", type=str)
-    root = click.prompt("  Project root directory", type=click.Path())
+def _prompt_python_target(current: dict | None = None) -> dict:
+    cur = current or {}
+    if current is not None:
+        name = cur.get("name", "")
+        click.echo(f"  Target name: {name} (fixed in edit mode)")
+    else:
+        name = click.prompt("  Target name", type=str)
+    root = click.prompt(
+        "  Project root directory",
+        type=click.Path(),
+        default=cur.get("root"),
+        show_default=bool(cur.get("root")),
+    )
     root_path = Path(root)
     if not root_path.exists():
         click.echo(f"  Warning: directory not found: {root_path.resolve()}")
@@ -144,17 +200,22 @@ def _prompt_python_target() -> dict:
         "**/__pycache__/**, **/.venv/**, **/venv/**, **/.tox/**, "
         "**/dist/**, **/build/**, **/*.egg-info/**"
     )
+    include_default = ", ".join(cur["include"]) if cur.get("include") else default_include
+    exclude_default = ", ".join(cur["exclude"]) if cur.get("exclude") else default_exclude
     include = [
         p.strip()
-        for p in click.prompt("  Include patterns (comma-separated)", default=default_include).split(",")
+        for p in click.prompt("  Include patterns (comma-separated)", default=include_default).split(",")
         if p.strip()
     ]
     exclude = [
         p.strip()
-        for p in click.prompt("  Exclude patterns (comma-separated)", default=default_exclude).split(",")
+        for p in click.prompt("  Exclude patterns (comma-separated)", default=exclude_default).split(",")
         if p.strip()
     ]
-    output = click.prompt("  Output graph path", default=f"graph/{name}_graph.json")
+    output = click.prompt(
+        "  Output graph path",
+        default=cur.get("output", f"graph/{name}_graph.json"),
+    )
     return {
         "type": "python",
         "name": name,
@@ -162,16 +223,26 @@ def _prompt_python_target() -> dict:
         "output": output,
         "include": include,
         "exclude": exclude,
-        "max_depth": 10,
-        "extract": {"imports": True, "functions": True, "calls": True, "classes": True},
-        "resolve": {"skip_external": True, "src_roots": []},
-        "labels": [],
+        "max_depth": cur.get("max_depth", 10),
+        "extract": cur.get("extract", {"imports": True, "functions": True, "calls": True, "classes": True}),
+        "resolve": cur.get("resolve", {"skip_external": True, "src_roots": []}),
+        "labels": cur.get("labels", []),
     }
 
 
-def _prompt_jsts_target(lang: str) -> dict:
-    name = click.prompt("  Target name", type=str)
-    root = click.prompt("  Project root directory", type=click.Path())
+def _prompt_jsts_target(lang: str, current: dict | None = None) -> dict:
+    cur = current or {}
+    if current is not None:
+        name = cur.get("name", "")
+        click.echo(f"  Target name: {name} (fixed in edit mode)")
+    else:
+        name = click.prompt("  Target name", type=str)
+    root = click.prompt(
+        "  Project root directory",
+        type=click.Path(),
+        default=cur.get("root"),
+        show_default=bool(cur.get("root")),
+    )
     root_path = Path(root)
     if not root_path.exists():
         click.echo(f"  Warning: directory not found: {root_path.resolve()}")
@@ -185,22 +256,31 @@ def _prompt_jsts_target(lang: str) -> dict:
         default_include = "src/**/*.js"
         default_exclude = "**/node_modules/**, **/*.test.js, **/*.spec.js"
         default_ext = ".js, /index.js"
+    include_default = ", ".join(cur["include"]) if cur.get("include") else default_include
+    exclude_default = ", ".join(cur["exclude"]) if cur.get("exclude") else default_exclude
+    resolved_exts = (cur.get("resolve") or {}).get("extensions") if cur else None
+    ext_default = ", ".join(resolved_exts) if resolved_exts else default_ext
     include = [
         p.strip()
-        for p in click.prompt("  Include patterns (comma-separated)", default=default_include).split(",")
+        for p in click.prompt("  Include patterns (comma-separated)", default=include_default).split(",")
         if p.strip()
     ]
     exclude = [
         p.strip()
-        for p in click.prompt("  Exclude patterns (comma-separated)", default=default_exclude).split(",")
+        for p in click.prompt("  Exclude patterns (comma-separated)", default=exclude_default).split(",")
         if p.strip()
     ]
-    output = click.prompt("  Output graph path", default=f"graph/{name}_graph.json")
+    output = click.prompt(
+        "  Output graph path",
+        default=cur.get("output", f"graph/{name}_graph.json"),
+    )
     extensions = [
         e.strip()
-        for e in click.prompt("  Resolve extensions (comma-separated)", default=default_ext).split(",")
+        for e in click.prompt("  Resolve extensions (comma-separated)", default=ext_default).split(",")
         if e.strip()
     ]
+    resolve = dict(cur.get("resolve") or {"tsconfig": None, "alias": {}})
+    resolve["extensions"] = extensions
     return {
         "type": lang,
         "name": name,
@@ -208,26 +288,26 @@ def _prompt_jsts_target(lang: str) -> dict:
         "output": output,
         "include": include,
         "exclude": exclude,
-        "max_depth": 10,
-        "extract": {
+        "max_depth": cur.get("max_depth", 10),
+        "extract": cur.get("extract", {
             "imports": True,
             "exports": True,
             "functions": True,
             "calls": True,
             "classes": lang == "javascript",
             "types": lang == "typescript",
-        },
-        "resolve": {"extensions": extensions, "tsconfig": None, "alias": {}},
-        "labels": [],
+        }),
+        "resolve": resolve,
+        "labels": cur.get("labels", []),
     }
 
 
-def _prompt_target(kind: str) -> dict:
+def _prompt_target(kind: str, current: dict | None = None) -> dict:
     if kind == "ddl":
-        return _prompt_ddl_target()
+        return _prompt_ddl_target(current)
     if kind == "python":
-        return _prompt_python_target()
-    return _prompt_jsts_target(kind)
+        return _prompt_python_target(current)
+    return _prompt_jsts_target(kind, current)
 
 
 @cli.command("init")
@@ -242,7 +322,7 @@ def init_cmd() -> None:
     click.echo("\n=== bindwood config setup ===\n")
     ollama_url = click.prompt("  Ollama URL", default="http://localhost:11434")
     embedding_model = click.prompt("  Embedding model", default="nomic-embed-text")
-    auxiliary_model = click.prompt("  Auxiliary (summary) model", default="gemma4:e4b")
+    auxiliary_model = click.prompt("  Auxiliary (summary) model", default="qwen2.5-coder:1.5b")
     db_path = click.prompt("  Database path", default="graph/code_graph.db")
     cfg = {
         "version": 1,
@@ -281,11 +361,7 @@ def add_cmd() -> None:
         if not existing:
             click.echo("  No existing targets to overwrite. Use `new` instead.")
             return
-        name_choices = sorted(n for n in existing if n)
-        click.echo("\n  Existing targets:")
-        for n in name_choices:
-            click.echo(f"    - {n}")
-        chosen = click.prompt("\n  Name of target to overwrite", type=click.Choice(name_choices))
+        chosen = _select_target(cfg.get("targets") or [], "overwrite")
         # Pre-fill the name by asking for a new definition; drop the old first.
         cfg["targets"] = [t for t in cfg["targets"] if t.get("name") != chosen]
 
@@ -344,6 +420,45 @@ def list_cmd() -> None:
         click.echo(f"       output:  {t.get('output', '-')}")
 
 
+@cli.command("edit")
+@click.argument("name", required=False)
+def edit_cmd(name: str | None) -> None:
+    """Edit an existing target in-place.
+
+    Each field is pre-filled with its current value — press Enter to keep
+    it, or type a new value. The target name is immutable in edit mode
+    (database rows are keyed by name; renames would orphan them).
+    """
+    resolved = resolve_config_path()
+    if not resolved:
+        click.echo("No config found. Run `bindwood init` first.")
+        return
+    path = _active_config_path()
+    cfg = _load_config_file(resolved)
+    targets = cfg.get("targets") or []
+    if not targets:
+        click.echo("Config has no targets. Nothing to edit.")
+        return
+
+    if not name:
+        name = _select_target(targets, "edit")
+
+    current = next((t for t in targets if t.get("name") == name), None)
+    if current is None:
+        click.echo(f"No target named '{name}'.")
+        return
+
+    click.echo(f"\n=== Edit target '{name}' ({current.get('type', '?')}) ===")
+    click.echo("  (press Enter to keep the current value)\n")
+
+    updated = _prompt_target(current.get("type", "ddl"), current=current)
+
+    cfg["targets"] = [updated if t.get("name") == name else t for t in targets]
+    _save_config_file(path, cfg)
+    click.echo(f"\nTarget '{name}' updated in {path}")
+    click.echo(f"Run `bindwood rescan {name}` to rebuild its graph, summaries, and embeddings.")
+
+
 @cli.command("delete")
 @click.argument("name", required=False)
 def delete_cmd(name: str | None) -> None:
@@ -364,11 +479,7 @@ def delete_cmd(name: str | None) -> None:
         return
 
     if not name:
-        names = [t.get("name", "") for t in targets if t.get("name")]
-        click.echo("Existing targets:")
-        for n in names:
-            click.echo(f"  - {n}")
-        name = click.prompt("Name to delete", type=click.Choice(names))
+        name = _select_target(targets, "delete")
 
     match = [t for t in targets if t.get("name") == name]
     if not match:
@@ -440,12 +551,82 @@ def scan(verbose: bool) -> None:
         click.echo("Project scanning failed")
 
 
+@cli.command("rescan")
+@click.argument("name", required=False)
+@click.option("--verbose", "-v", is_flag=True, default=False, help="Print full tracebacks on error.")
+@click.option("--force", is_flag=True, default=False, help="Skip the confirmation prompt.")
+def rescan_cmd(name: str | None, verbose: bool, force: bool) -> None:
+    """Re-run scan for a single target: graph, summaries, and embeddings.
+
+    Use this to recover one project when something went wrong (failed
+    extraction, interrupted embeddings, stale graph, etc.). Only the
+    selected target's rows are purged and rebuilt — other targets in
+    the database are untouched.
+    """
+    resolved = resolve_config_path()
+    if not resolved:
+        click.echo("No config found. Run `bindwood init` first.")
+        return
+    cfg = _load_config_file(resolved)
+    targets = cfg.get("targets") or []
+    if not targets:
+        click.echo("Config has no targets. Nothing to rescan.")
+        return
+
+    if not name:
+        name = _select_target(targets, "rescan")
+
+    match = [t for t in targets if t.get("name") == name]
+    if not match:
+        click.echo(f"No target named '{name}'.")
+        return
+
+    if not force and not click.confirm(
+        f"Rescan '{name}' ({match[0].get('type', '?')})? "
+        "Its graph, summaries, and embeddings will be rebuilt.",
+        default=True,
+    ):
+        click.echo("Aborted.")
+        return
+
+    if rescan_target(name, verbose=verbose):
+        click.echo(f"Rescan of '{name}' completed")
+    else:
+        click.echo(f"Rescan of '{name}' failed")
+
+
 @cli.command("mcp")
 def mcp_command() -> None:
     """Start the MCP stdio server."""
     from bindwood.servers.mcp import run as run_mcp
 
     run_mcp()
+
+
+@cli.command("mcp-path")
+def mcp_path_cmd() -> None:
+    """Print the MCP server file path and a ready-to-use Claude Code config snippet."""
+    import inspect
+
+    import bindwood.servers.mcp as _mcp_module
+
+    mcp_file = Path(inspect.getfile(_mcp_module)).resolve()
+    db_path = resolve_db_path()
+
+    click.echo(f"MCP server file: {mcp_file}\n")
+    click.echo("Add this to .claude/settings.local.json (project) or ~/.claude/settings.json (global):\n")
+    snippet = {
+        "mcpServers": {
+            "code-graph": {
+                "command": "python",
+                "args": [str(mcp_file)],
+                "env": {
+                    "BINDWOOD_DB": str(db_path),
+                },
+            }
+        }
+    }
+    click.echo(json.dumps(snippet, indent=2))
 
 
 @cli.command("serve")
@@ -553,6 +734,50 @@ def doctor_cmd() -> None:
 def ollama_status(ctx: click.Context) -> None:
     """Deprecated alias — use `bindwood doctor`."""
     ctx.invoke(doctor_cmd)
+
+
+@cli.command("reset")
+@click.option("--force", is_flag=True, default=False, help="Skip confirmation prompt.")
+def reset_cmd(force: bool) -> None:
+    """Reset the config file to factory defaults.
+
+    Replaces the current config with a clean slate — default Ollama
+    settings, default database path, and an empty targets list. Use this
+    to recover from a corrupted config or to start fresh.
+
+    The existing file is backed up as ``config.json.bak`` before being
+    overwritten.
+    """
+    path = _active_config_path()
+    if path.exists():
+        click.echo(f"Config to reset: {path}")
+        if not force and not click.confirm(
+            "This will overwrite your current config. A backup will be saved as config.json.bak. Continue?",
+            default=False,
+        ):
+            click.echo("Aborted.")
+            return
+        # Back up existing config
+        bak = path.with_suffix(".json.bak")
+        import shutil
+        shutil.copy2(path, bak)
+        click.echo(f"Backup saved: {bak}")
+    else:
+        click.echo(f"No config found at {path} — writing defaults.")
+
+    defaults = {
+        "version": 1,
+        "ollama": {
+            "url": "http://localhost:11434",
+            "embedding_model": "nomic-embed-text",
+            "auxiliary_model": "qwen2.5-coder:1.5b",
+        },
+        "database": {"path": "graph/code_graph.db"},
+        "targets": [],
+    }
+    _save_config_file(path, defaults)
+    click.echo(f"Config reset to factory defaults: {path}")
+    click.echo("Run `bindwood init` to reconfigure, or `bindwood add` to add targets.")
 
 
 # ── query subgroup ───────────────────────────────────────────

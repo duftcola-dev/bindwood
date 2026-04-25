@@ -24,6 +24,13 @@ Inspect the active config at any time with:
 bindwood list
 ```
 
+Edit an existing target (each field is pre-filled — press Enter to keep it):
+
+```bash
+bindwood edit                # pick from an indexed list
+bindwood edit my-target      # skip the selector
+```
+
 Remove a target (config-only — the DB is rebuilt on the next scan):
 
 ```bash
@@ -41,7 +48,7 @@ This runs four phases:
 
 1. **Extract** — tree-sitter / sqlglot parse every configured target into a graph JSON
 2. **Load** — rebuild `graph/code_graph.db` from the JSON graphs
-3. **Summarise** — call the auxiliary model (`gemma4:e4b` by default) to write a one-line summary for each node
+3. **Summarise** — call the auxiliary model (`qwen2.5-coder:1.5b` by default) to write a one-line summary for each node
 4. **Embed** — call the embedding model (`nomic-embed-text` by default) and store vectors in `sqlite-vec`
 
 The two Ollama models serve distinct roles and fail independently:
@@ -49,13 +56,13 @@ The two Ollama models serve distinct roles and fail independently:
 | Model | Role | If unavailable |
 |-------|------|---------------|
 | `nomic-embed-text` | Produces vector embeddings — required for `search_code` and `context` queries | Embeddings are skipped; structural queries (`find`, `neighbors`, `slice`) still work |
-| `gemma4:e4b` | Generates per-node summaries shown in query output and search results | Summaries are skipped; everything else still works |
+| `qwen2.5-coder:1.5b` | Generates per-node summaries shown in query output and search results | Summaries are skipped; everything else still works |
 
 Pull both models before scanning for the full experience:
 
 ```bash
 ollama pull nomic-embed-text
-ollama pull gemma4:e4b
+ollama pull qwen2.5-coder:1.5b
 ```
 
 Pass `--verbose` / `-v` to print full tracebacks on error:
@@ -63,6 +70,16 @@ Pass `--verbose` / `-v` to print full tracebacks on error:
 ```bash
 bindwood scan --verbose
 ```
+
+To rebuild **one** target only — e.g. after editing it, or to recover from an interrupted run — use `rescan`:
+
+```bash
+bindwood rescan               # pick from an indexed list
+bindwood rescan my-target     # skip the selector
+bindwood rescan my-target --force   # skip the confirmation prompt
+```
+
+Only the named target's rows are purged and rebuilt; other targets in the database are untouched.
 
 Run `bindwood doctor` to check both models and the rest of your setup in one go.
 
@@ -83,16 +100,27 @@ Full command reference: [CLI → Query Reference](../cli/query.md).
 
 ## 4. Wire up the MCP server
 
-`bindwood mcp` is a **stdio MCP server** — you never run it manually. Claude Code spawns it automatically using the command you register in its settings:
+`bindwood mcp` is a **stdio MCP server** — you never run it manually. Claude Code spawns the server file automatically using the path you register in its settings. Get that path first:
+
+```bash
+bindwood mcp-path
+# → /absolute/path/to/bindwood/servers/mcp.py
+```
+
+Then add it to your Claude Code settings:
 
 ```json title=".claude/settings.local.json"
 {
   "mcpServers": {
     "code-graph": {
-      "command": "bindwood",
-      "args": ["mcp"],
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory", "/absolute/path/to/bindwood",
+        "python", "bindwood/servers/mcp.py"
+      ],
       "env": {
-        "BINDWOOD_DB": "/absolute/path/to/graph/code_graph.db"
+        "BINDWOOD_DB": "/absolute/path/to/your/graph/code_graph.db"
       }
     }
   }
@@ -133,7 +161,6 @@ The CLI always writes to the user config dir, so in normal use you never think a
 2. `BINDWOOD_CONFIG` environment variable
 3. User config dir (`%APPDATA%\bindwood\config.json` / `$XDG_CONFIG_HOME/bindwood/config.json`) — **canonical**
 4. `./bindwood.json` in the current directory (repo-local override)
-5. Legacy in-repo default: `bindwood/config/config.json` (source checkouts)
 
 Legacy `GTG_CONFIG` / `GTG_DB` / `GTG_API_KEY` / `gtg.json` still work for one deprecation cycle.
 
@@ -145,7 +172,7 @@ A config managed by the CLI looks roughly like:
   "ollama": {
     "url": "http://localhost:11434",
     "embedding_model": "nomic-embed-text",
-    "auxiliary_model": "gemma4:e4b"
+    "auxiliary_model": "qwen2.5-coder:1.5b"
   },
   "database": { "path": "graph/code_graph.db" },
   "targets": [

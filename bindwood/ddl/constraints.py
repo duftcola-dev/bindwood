@@ -1,14 +1,29 @@
-"""Regex-based constraint extractors for DDL (PKs, UKs, FKs, indexes)."""
+"""Regex-based constraint extractors for DDL (PKs, UKs, FKs, indexes).
+
+Handles the ``ALTER TABLE ... ADD CONSTRAINT`` form that ``pg_dump``
+produces. Inline table-body constraints (``CONSTRAINT pk ... PRIMARY KEY``,
+column-level ``REFERENCES``, etc.) are handled by ``inline.py`` — both
+paths populate the same ``tables[name]`` dicts.
+"""
 
 from __future__ import annotations
 
 import re
 
 
+# Identifier fragment: optional schema prefix + optional double-quote wrapping.
+# Captures the bare name as ``(\w+)``. Use this anywhere a schema-qualified
+# table reference appears in raw DDL text.
+_QUALIFIED = r'(?:"?\w+"?\.)?"?(\w+)"?'
+
+
 def extract_primary_keys(ddl_text: str, tables: dict):
     """Extract PRIMARY KEY constraints from ALTER TABLE statements."""
-    pattern = r'ALTER TABLE ONLY public\."?(\w+)"?\s+ADD CONSTRAINT \w+ PRIMARY KEY \(([^)]+)\);'
-    for match in re.finditer(pattern, ddl_text):
+    pattern = (
+        rf'ALTER\s+TABLE\s+(?:ONLY\s+)?{_QUALIFIED}\s+'
+        rf'ADD\s+CONSTRAINT\s+"?\w+"?\s+PRIMARY\s+KEY\s*\(([^)]+)\);'
+    )
+    for match in re.finditer(pattern, ddl_text, re.IGNORECASE):
         table = match.group(1)
         cols = [c.strip().strip('"') for c in match.group(2).split(",")]
         if table in tables:
@@ -17,8 +32,11 @@ def extract_primary_keys(ddl_text: str, tables: dict):
 
 def extract_unique_constraints(ddl_text: str, tables: dict):
     """Extract UNIQUE constraints from ALTER TABLE statements."""
-    pattern = r'ALTER TABLE ONLY public\."?(\w+)"?\s+ADD CONSTRAINT (\w+) UNIQUE \(([^)]+)\);'
-    for match in re.finditer(pattern, ddl_text):
+    pattern = (
+        rf'ALTER\s+TABLE\s+(?:ONLY\s+)?{_QUALIFIED}\s+'
+        rf'ADD\s+CONSTRAINT\s+"?(\w+)"?\s+UNIQUE\s*\(([^)]+)\);'
+    )
+    for match in re.finditer(pattern, ddl_text, re.IGNORECASE):
         table = match.group(1)
         name = match.group(2)
         cols = [c.strip().strip('"') for c in match.group(3).split(",")]
@@ -29,12 +47,12 @@ def extract_unique_constraints(ddl_text: str, tables: dict):
 def extract_foreign_keys(ddl_text: str, tables: dict):
     """Extract FOREIGN KEY constraints from ALTER TABLE statements."""
     pattern = (
-        r'ALTER TABLE ONLY public\."?(\w+)"?\s+'
-        r"ADD CONSTRAINT (\w+) FOREIGN KEY \(([^)]+)\) "
-        r'REFERENCES public\."?(\w+)"?\(([^)]+)\)'
+        rf'ALTER\s+TABLE\s+(?:ONLY\s+)?{_QUALIFIED}\s+'
+        rf'ADD\s+CONSTRAINT\s+"?(\w+)"?\s+FOREIGN\s+KEY\s*\(([^)]+)\)\s+'
+        rf'REFERENCES\s+{_QUALIFIED}\s*\(([^)]+)\)'
         r"([^;]*);"
     )
-    for match in re.finditer(pattern, ddl_text):
+    for match in re.finditer(pattern, ddl_text, re.IGNORECASE):
         from_table = match.group(1)
         constraint_name = match.group(2)
         from_cols = [c.strip().strip('"') for c in match.group(3).split(",")]
@@ -49,12 +67,13 @@ def extract_foreign_keys(ddl_text: str, tables: dict):
             "references_columns": to_cols,
         }
 
-        on_delete = re.search(r"ON DELETE (\w+(?:\s+\w+)?)", trailer)
-        on_update = re.search(r"ON UPDATE (\w+(?:\s+\w+)?)", trailer)
+        action = r"(?:NO\s+ACTION|SET\s+NULL|SET\s+DEFAULT|CASCADE|RESTRICT)"
+        on_delete = re.search(rf"ON\s+DELETE\s+({action})", trailer, re.IGNORECASE)
+        on_update = re.search(rf"ON\s+UPDATE\s+({action})", trailer, re.IGNORECASE)
         if on_delete:
-            fk["on_delete"] = on_delete.group(1)
+            fk["on_delete"] = re.sub(r"\s+", " ", on_delete.group(1)).upper()
         if on_update:
-            fk["on_update"] = on_update.group(1)
+            fk["on_update"] = re.sub(r"\s+", " ", on_update.group(1)).upper()
 
         if from_table in tables:
             tables[from_table]["foreign_keys_out"].append(fk)
@@ -102,13 +121,20 @@ def _split_top_level(expr: str) -> list[str]:
 
 
 def extract_indexes(ddl_text: str, tables: dict, views: dict):
-    """Extract CREATE [UNIQUE] INDEX statements for tables and materialized views."""
-    pattern = r"CREATE (UNIQUE )?INDEX (\w+) ON public\.\"?(\w+)\"? USING (\w+) "
-    for match in re.finditer(pattern, ddl_text):
+    """Extract CREATE [UNIQUE] INDEX statements for tables and materialized views.
+
+    Accepts any schema prefix and makes the ``USING <method>`` clause
+    optional (Postgres defaults to btree when omitted).
+    """
+    pattern = (
+        rf'CREATE\s+(UNIQUE\s+)?INDEX\s+"?(\w+)"?\s+ON\s+{_QUALIFIED}'
+        r'(?:\s+USING\s+(\w+))?\s*(?=\()'
+    )
+    for match in re.finditer(pattern, ddl_text, re.IGNORECASE):
         unique = bool(match.group(1))
         name = match.group(2)
         target = match.group(3)
-        method = match.group(4)
+        method = match.group(4) or "btree"
 
         paren_start = match.end()
         col_expr = _extract_balanced_parens(ddl_text, paren_start)

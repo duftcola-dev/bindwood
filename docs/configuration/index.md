@@ -10,7 +10,7 @@ bindwood is driven by a single JSON config file. It specifies global settings (O
   "ollama": {
     "url": "http://localhost:11434",
     "embedding_model": "nomic-embed-text",
-    "auxiliary_model": "gemma4:e4b"
+    "auxiliary_model": "qwen2.5-coder:1.5b"
   },
   "database": { "path": "graph/code_graph.db" },
   "targets": [
@@ -37,12 +37,11 @@ You can also pass a single-target JSON file (legacy format) — the tool auto-de
 
 ## Where config is loaded from
 
-You shouldn't need to know this in normal use — the CLI (`bindwood init`, `bindwood add`, `bindwood delete`) always writes to the canonical user config dir. The resolver chain is:
+You shouldn't need to know this in normal use — the CLI (`bindwood init`, `bindwood add`, `bindwood edit`, `bindwood delete`) always writes to the canonical user config dir. Rebuild just one target after an edit with `bindwood rescan <name>`. The resolver chain is:
 
 1. Explicit `--config` passed to library callers
 2. `BINDWOOD_CONFIG` environment variable
 3. User config dir (`%APPDATA%\bindwood\config.json` on Windows, `$XDG_CONFIG_HOME/bindwood/config.json` elsewhere) — **the canonical location**
 4. `./bindwood.json` in the current directory (useful for repo-local overrides)
-5. Legacy default `bindwood/config/config.json` (source checkouts)
 
 Legacy `GTG_CONFIG` / `gtg.json` are still accepted for one deprecation cycle.

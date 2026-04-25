@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 from datetime import datetime
 
 from .parser import parse_ddl, extract_tables, extract_enums, extract_comments, locate_spans
@@ -13,6 +12,8 @@ from .constraints import (
     extract_indexes,
 )
 from .views import extract_views
+from .mysql import extract_mysql_inline, extract_mysql_views
+from .inline import extract_postgres_inline
 
 
 def _table_source_text(name: str, table: dict) -> str:
@@ -63,41 +64,79 @@ def _view_source_text(name: str, view: dict) -> str:
 
 def build_graph(ddl_text: str, dialect: str, source_path: str) -> dict:
     """Build the complete database graph from DDL text."""
+    dialect_lc = (dialect or "").lower()
+    is_mysql = dialect_lc == "mysql"
+
     # Phase 1a: sqlglot AST for CREATE TABLE (column definitions)
     statements = parse_ddl(ddl_text, dialect)
     tables = extract_tables(statements)
 
-    # Phase 1b: regex for constraints and enums
-    enums = extract_enums(ddl_text)
-    extract_primary_keys(ddl_text, tables)
-    extract_unique_constraints(ddl_text, tables)
-    extract_foreign_keys(ddl_text, tables)
-
-    # Phase 1c: views (need all known names to resolve source references)
-    view_name_pattern = r"CREATE (?:MATERIALIZED )?VIEW public\.(\w+) AS"
-    all_known_names = set(tables.keys()) | set(re.findall(view_name_pattern, ddl_text))
-    views = extract_views(ddl_text, all_known_names)
-
-    # Phase 1d: indexes (for both tables and materialized views)
-    extract_indexes(ddl_text, tables, views)
-
-    # Phase 1e: COMMENT ON statements -> docstrings on tables/columns/views
-    comments = extract_comments(ddl_text)
-    for table_name, table_data in tables.items():
-        table_data["docstring"] = comments["tables"].get(table_name)
-        column_comments = comments["columns"].get(table_name, {})
-        for col in table_data["columns"]:
-            col["docstring"] = column_comments.get(col["name"])
-    for view_name, view_data in views.items():
-        view_data["docstring"] = comments["views"].get(view_name)
-
-    # Phase 1f: locate CREATE statement spans for coordinate fields
+    # Phase 1b: locate CREATE statement spans. We run this before
+    # constraint extraction because the MySQL path needs each table's
+    # raw_source to parse inline PK/UK/KEY/FK rows.
     spans = locate_spans(ddl_text)
     for table_name, table_data in tables.items():
         span = spans["tables"].get(table_name, {})
         for key in ("line", "end_line", "byte_start", "byte_end", "content_hash", "source_preview", "raw_source"):
             if key in span:
                 table_data[key] = span[key]
+
+    # Phase 1c: constraints, enums, views, indexes — dialect-specific
+    if is_mysql:
+        enums: dict = {}  # MySQL declares enums inline as column types, not CREATE TYPE
+        extract_mysql_inline(tables)
+        # Views need to know all table/view names to resolve FROM/JOIN refs.
+        known_names = set(tables.keys()) | set(spans["views"].keys())
+        views = extract_mysql_views(ddl_text, known_names)
+    else:
+        # Postgres — supports both external ``ALTER TABLE ... ADD
+        # CONSTRAINT`` form (pg_dump) and inline ``CREATE TABLE`` body
+        # constraints (pgModeler output, hand-written DDL). Run both;
+        # the inline extractor deduplicates against what ALTER TABLE
+        # already added.
+        enums = extract_enums(ddl_text)
+        extract_primary_keys(ddl_text, tables)
+        extract_unique_constraints(ddl_text, tables)
+        extract_foreign_keys(ddl_text, tables)
+        extract_postgres_inline(tables)
+
+        # Known names come from our own span locator so any schema (public,
+        # iam, stealthis, …) and any quoting style is handled uniformly.
+        all_known_names = set(tables.keys()) | set(spans["views"].keys())
+        views = extract_views(ddl_text, all_known_names)
+
+        extract_indexes(ddl_text, tables, views)
+
+    # Phase 1e: COMMENT ON statements -> docstrings on tables/columns/views.
+    # Postgres-only syntax; MySQL docstrings come from inline COMMENT clauses
+    # handled by extract_mysql_inline above.
+    if not is_mysql:
+        comments = extract_comments(ddl_text)
+        for table_name, table_data in tables.items():
+            table_data["docstring"] = comments["tables"].get(table_name)
+            column_comments = comments["columns"].get(table_name, {})
+            for col in table_data["columns"]:
+                col["docstring"] = column_comments.get(col["name"])
+        for view_name, view_data in views.items():
+            view_data["docstring"] = comments["views"].get(view_name)
+    else:
+        # Ensure every column has a docstring key (None if MySQL didn't
+        # annotate it) so downstream code can assume the field exists.
+        for table_data in tables.values():
+            table_data.setdefault("docstring", None)
+            for col in table_data["columns"]:
+                col.setdefault("docstring", None)
+            # Normalise constraint list keys — extract_mysql_inline only
+            # appends when there's a match, so tables without e.g. FKs
+            # still need the empty list here for graph_builder's downstream
+            # iteration over ``foreign_keys_out`` / ``referenced_by``.
+            table_data.setdefault("primary_key", [])
+            table_data.setdefault("unique_constraints", [])
+            table_data.setdefault("indexes", [])
+            table_data.setdefault("foreign_keys_out", [])
+            table_data.setdefault("referenced_by", [])
+        for view_data in views.values():
+            view_data.setdefault("docstring", None)
     for view_name, view_data in views.items():
         span = spans["views"].get(view_name, {})
         for key in ("line", "end_line", "byte_start", "byte_end", "content_hash", "source_preview", "raw_source"):

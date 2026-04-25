@@ -48,6 +48,8 @@ class SqliteConnector:
         conn.enable_load_extension(True)
         sqlite_vec.load(conn)
         conn.enable_load_extension(False)
+        # Per-connection; required for ON DELETE CASCADE on targets(name).
+        conn.execute("PRAGMA foreign_keys = ON")
         conn.execute("PRAGMA journal_mode=WAL")
         conn.execute("PRAGMA synchronous=NORMAL")
         return conn

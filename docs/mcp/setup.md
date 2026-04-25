@@ -2,11 +2,60 @@
 
 `bindwood mcp` is a **stdio MCP server**. You register it in Claude Code's settings and Claude Code spawns the process automatically — you never start it manually.
 
-## 1. Add to Claude Code settings
+## 1. Generate the config snippet
 
-Claude Code reads this config, spawns `bindwood mcp` as a subprocess, and connects to it over stdio. `BINDWOOD_DB` is an environment variable passed to the **server process** so it knows where to find its SQLite database — Claude itself only ever sees the MCP tools the server exposes.
+Run this once — it prints the MCP server file path **and** a ready-to-paste JSON block with your actual database path already filled in:
 
-=== "Project-level (`.claude/settings.local.json`)"
+```bash
+bindwood mcp-path
+```
+
+Example output:
+
+```
+MCP server file: /home/you/repos/bindwood/bindwood/servers/mcp.py
+
+Add this to .claude/settings.local.json (project) or ~/.claude/settings.json (global):
+
+{
+  "mcpServers": {
+    "code-graph": {
+      "command": "python",
+      "args": ["/home/you/repos/bindwood/bindwood/servers/mcp.py"],
+      "env": {
+        "BINDWOOD_DB": "/home/you/repos/bindwood/graph/code_graph.db"
+      }
+    }
+  }
+}
+```
+
+Copy that JSON block directly into your settings file — no manual path editing required.
+
+## 2. Add to Claude Code settings
+
+Claude Code reads this config and spawns the server file as a subprocess over stdio. `BINDWOOD_DB` is an environment variable passed to the **server process** so it knows where to find its SQLite database — Claude itself only ever sees the MCP tools the server exposes, never the database directly.
+
+=== "Source checkout (via `uv`)"
+
+    Use the snippet from `bindwood mcp-path` — it already contains the correct paths.
+    If you need to build it manually:
+
+    ```json
+    {
+      "mcpServers": {
+        "code-graph": {
+          "command": "python",
+          "args": ["/absolute/path/to/bindwood/bindwood/servers/mcp.py"],
+          "env": {
+            "BINDWOOD_DB": "/absolute/path/to/your/graph/code_graph.db"
+          }
+        }
+      }
+    }
+    ```
+
+=== "Installed via pip"
 
     ```json
     {
@@ -22,24 +71,11 @@ Claude Code reads this config, spawns `bindwood mcp` as a subprocess, and connec
     }
     ```
 
-=== "Source checkout (via `uv`)"
-
-    ```json
-    {
-      "mcpServers": {
-        "code-graph": {
-          "command": "uv",
-          "args": ["run", "--directory", "/path/to/bindwood/checkout", "bindwood", "mcp"]
-        }
-      }
-    }
-    ```
-
 === "Global (`~/.claude/settings.json`)"
 
-    Use the same shape as the project-level config, but place it in your global settings file.
+    Use the same shape as either tab above, placed in your global settings file instead.
 
-## 2. Verify
+## 3. Verify
 
 Restart Claude Code after editing the settings file. Claude Code reads the config, spawns `bindwood mcp` over stdio, and the tools register automatically.
 

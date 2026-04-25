@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "bindwood": {
+      "command": "bindwood",
+      "args": [
+        "mcp"
+      ]
+    }
+  }
+}

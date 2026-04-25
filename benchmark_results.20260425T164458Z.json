@@ -1,0 +1,440 @@
+{
+  "run_metadata": {
+    "started_at": "2026-04-25T16:44:58.059609+00:00",
+    "finished_at": "2026-04-25T16:46:35.945007+00:00",
+    "duration_seconds": 97.89
+  },
+  "runs": [
+    {
+      "repo": "p-example-2",
+      "type": "python",
+      "target": "p-example-2",
+      "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+      "question": {
+        "id": "lookup_1",
+        "tier": "lookup",
+        "text": "Find every function whose name contains 'parse'. For each match, show the function name, file, and line number."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "p-example-2",
+        "question_id": "lookup_1",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nFind every function whose name contains 'parse'. For each match, show the function name, file, and line number.",
+        "answer": "No functions in this project have `parse` in their names. The only match is `pytest_addoption(parser)` at tests/conftest.py:124, where `parser` is a parameter name, not part of the function name.\n\nOther occurrences of \"parse\" in the codebase are all unrelated to function names \u2014 they're imports (`urllib.parse`, `dateparser`), parameter names (`parser`), variable names (`parsed_msg`), or comments/docstrings.",
+        "turns": 12,
+        "usage": {
+          "input_tokens": 22,
+          "output_tokens": 510,
+          "cache_creation_input_tokens": 17277,
+          "cache_read_input_tokens": 189951,
+          "total_tokens": 532,
+          "effective_tokens": 41123.4
+        },
+        "result_usage": {
+          "input_tokens": 14,
+          "output_tokens": 2061,
+          "cache_creation_input_tokens": 9630,
+          "cache_read_input_tokens": 145274,
+          "total_tokens": 2075,
+          "effective_tokens": 28639.9
+        },
+        "total_cost_usd": 0.1848835,
+        "duration_ms": 28098,
+        "elapsed_seconds": 29.28,
+        "tool_calls": [
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "^\\s*(async\\s+)?def\\s+\\w*parse\\w*\\s*\\(",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+              "output_mode": "content",
+              "-n": true,
+              "-i": true,
+              "head_limit": 0
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "def\\s+\\w*parse\\w*\\s*\\(",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+              "output_mode": "content",
+              "-n": true,
+              "-i": true,
+              "head_limit": 0
+            }
+          },
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls /home/robin/Repositories/Samples/Python/p-example-2",
+              "description": "List project root directory"
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "def\\s+\\w*[Pp]arse\\w*\\s*\\(",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+              "output_mode": "content",
+              "-n": true,
+              "head_limit": 0,
+              "glob": "*.py"
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "parse",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+              "output_mode": "files_with_matches",
+              "-i": true,
+              "glob": "*.py",
+              "head_limit": 20
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "def\\s+\\w*parse\\w*",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+              "output_mode": "content",
+              "-n": true,
+              "-i": true,
+              "glob": "*.py",
+              "head_limit": 0
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "parse",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+              "output_mode": "content",
+              "-n": true,
+              "-i": true,
+              "glob": "*.py",
+              "head_limit": 100
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "def .*parse",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+              "output_mode": "content",
+              "-n": true,
+              "-i": true,
+              "glob": "*.py",
+              "head_limit": 0
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "p-example-2",
+        "question_id": "lookup_1",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nFind every function whose name contains 'parse'. For each match, show the function name, file, and line number.",
+        "answer": "The bindwood code graph database hasn't been built for this project yet. To use the graph tools, you'd need to run `bindwood scan` from the project root first.\n\nWould you like me to:\n1. Run `bindwood scan` to build the graph, then answer the question, or\n2. Use plain file/grep tools (e.g., Glob + Grep) to find `parse` functions directly without the graph?",
+        "turns": 4,
+        "usage": {
+          "input_tokens": 14,
+          "output_tokens": 54,
+          "cache_creation_input_tokens": 12506,
+          "cache_read_input_tokens": 34182,
+          "total_tokens": 68,
+          "effective_tokens": 19118.7
+        },
+        "result_usage": {
+          "input_tokens": 8,
+          "output_tokens": 353,
+          "cache_creation_input_tokens": 6451,
+          "cache_read_input_tokens": 28729,
+          "total_tokens": 361,
+          "effective_tokens": 11297.6
+        },
+        "total_cost_usd": 0.06402725,
+        "duration_ms": 7770,
+        "elapsed_seconds": 9.36,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "function",
+              "name": "%%parse%%",
+              "limit": 200
+            }
+          },
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "p-example-2",
+      "type": "python",
+      "target": "p-example-2",
+      "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+      "question": {
+        "id": "lookup_2",
+        "tier": "lookup",
+        "text": "Find the module that exposes this project's main public API to end users. Show its path and list the top-level public names it exports."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "p-example-2",
+        "question_id": "lookup_2",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nFind the module that exposes this project's main public API to end users. Show its path and list the top-level public names it exports.",
+        "answer": "**Module:** `binance/__init__.py` (path: `/home/robin/Repositories/Samples/Python/p-example-2/binance/__init__.py`)\n\nThis is the main public API entry point \u2014 users import from `binance`. Top-level public names it explicitly re-exports:\n\n- `__version__` \u2014 `\"1.0.36\"`\n- `AsyncClient` (from `binance.async_client`)\n- `Client` (from `binance.client`)\n- Depth cache managers (from `binance.ws.depthcache`):\n  - `DepthCacheManager`\n  - `OptionsDepthCacheManager`\n  - `ThreadedDepthCacheManager`\n  - `FuturesDepthCacheManager`\n- Socket / stream managers (from `binance.ws.streams`):\n  - `BinanceSocketManager`\n  - `ThreadedWebsocketManager`\n  - `BinanceSocketType`\n- `KeepAliveWebsocket` (from `binance.ws.keepalive_websocket`)\n- `ReconnectingWebsocket` (from `binance.ws.reconnecting_websocket`)\n- Wildcard re-exports (`*`) from:\n  - `binance.ws.constants`\n  - `binance.exceptions` (e.g. `BinanceAPIException`, `BinanceOrderException`, etc.)\n  - `binance.enums` (order types, intervals, sides, etc.)",
+        "turns": 5,
+        "usage": {
+          "input_tokens": 15,
+          "output_tokens": 142,
+          "cache_creation_input_tokens": 12648,
+          "cache_read_input_tokens": 68289,
+          "total_tokens": 157,
+          "effective_tokens": 22795.9
+        },
+        "result_usage": {
+          "input_tokens": 9,
+          "output_tokens": 826,
+          "cache_creation_input_tokens": 6915,
+          "cache_read_input_tokens": 58189,
+          "total_tokens": 835,
+          "effective_tokens": 15297.7
+        },
+        "total_cost_usd": 0.09347225,
+        "duration_ms": 13053,
+        "elapsed_seconds": 14.49,
+        "tool_calls": [
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls /home/robin/Repositories/Samples/Python/p-example-2",
+              "description": "List project root contents"
+            }
+          },
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls /home/robin/Repositories/Samples/Python/p-example-2/binance",
+              "description": "List binance package contents"
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/__init__.py"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "p-example-2",
+        "question_id": "lookup_2",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nFind the module that exposes this project's main public API to end users. Show its path and list the top-level public names it exports.",
+        "answer": "The bindwood code graph database doesn't exist for this project, and the only tools available to me in this session are bindwood graph tools (no filesystem/shell access).\n\nTo answer your question, the graph needs to be built first. Run:\n\n```\nbindwood scan\n```\n\nfrom `/home/robin/Repositories/Samples/Python/p-example-2`, then I can locate the public API module and enumerate its top-level exports.",
+        "turns": 7,
+        "usage": {
+          "input_tokens": 17,
+          "output_tokens": 210,
+          "cache_creation_input_tokens": 13180,
+          "cache_read_input_tokens": 68826,
+          "total_tokens": 227,
+          "effective_tokens": 23584.6
+        },
+        "result_usage": {
+          "input_tokens": 8,
+          "output_tokens": 597,
+          "cache_creation_input_tokens": 6500,
+          "cache_read_input_tokens": 28657,
+          "total_tokens": 605,
+          "effective_tokens": 11595.7
+        },
+        "total_cost_usd": 0.0703825,
+        "duration_ms": 10111,
+        "elapsed_seconds": 11.88,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "file",
+              "name": "__init__.py"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "p-example-2",
+      "type": "python",
+      "target": "p-example-2",
+      "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+      "question": {
+        "id": "lookup_3",
+        "tier": "lookup",
+        "text": "List all functions or methods related to configuration management (loading, saving, validating, or resetting configuration)."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "p-example-2",
+        "question_id": "lookup_3",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nList all functions or methods related to configuration management (loading, saving, validating, or resetting configuration).",
+        "answer": "Note: this project is the `python-binance` SDK \u2014 it doesn't have a local app-config layer (no `load_config`/`save_config`/`validate_config`/`reset_config` style helpers). The \"config\" functions here are **REST API endpoints** that read/modify configuration on Binance's side, plus a couple of pytest hooks and logging tests.\n\n## Source code (binance/)\n\n**Futures account/symbol configuration**\n- `futures_account_config` \u2014 binance/client.py:8522, binance/async_client.py:2545\n- `futures_symbol_config` \u2014 binance/client.py:8530, binance/async_client.py:2552\n\n**Portfolio (papi) UM configuration**\n- `papi_get_um_account_config` \u2014 binance/client.py:10924, binance/async_client.py:3418\n- `papi_get_um_symbol_config` \u2014 binance/client.py:10939, binance/async_client.py:3425\n\n**Mining hash-rate transfer configuration**\n- `margin_v1_get_mining_hash_transfer_config_details_list` \u2014 binance/client.py:15298, binance/async_client.py:5073\n- `margin_v1_post_mining_hash_transfer_config` \u2014 binance/client.py:17061, binance/async_client.py:5626\n- `margin_v1_post_mining_hash_transfer_config_cancel` \u2014 binance/client.py:15672, binance/async_client.py:5194\n\n**Options Market-Maker Protection configuration** (the only group with an explicit reset)\n- `options_get_market_maker_protection_config` \u2014 binance/client.py:16568\n- `options_post_market_maker_protection_config` \u2014 binance/client.py:16581\n- `options_reset_market_maker_protection_config` \u2014 binance/client.py:16602\n\n## Tests / tooling\n\n- `pytest_configure` \u2014 tests/conftest.py:148\n- `pytest_collection_modifyitems(config, ...)` \u2014 tests/conftest.py:164\n- `test_futures_account_config` \u2014 tests/test_futures.py:87, tests/test_client_futures.py:403, tests/test_async_client_futures.py:343\n- `test_futures_symbol_config` \u2014 tests/test_client_futures.py:407, tests/test_async_client_futures.py:346\n- `test_papi_get_um_account_config` / `test_papi_get_um_symbol_config` \u2014 tests/test_client_portfolio.py:131,135 and tests/test_async_client_portfolio.py:131,135\n- `test_websocket_logger_level_configuration` \u2014 tests/test_websocket_verbose.py:26\n- `test_combined_logging_configuration` \u2014 tests/test_websocket_verbose.py:43\n\nThere are no load/save/validate/reset helpers for a local config file in this repo \u2014 configuration in this SDK means remote Binance account/symbol settings exposed as API methods.",
+        "turns": 8,
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 182,
+          "cache_creation_input_tokens": 33796,
+          "cache_read_input_tokens": 100999,
+          "total_tokens": 273,
+          "effective_tokens": 52617.9
+        },
+        "result_usage": {
+          "input_tokens": 43,
+          "output_tokens": 1641,
+          "cache_creation_input_tokens": 14661,
+          "cache_read_input_tokens": 54337,
+          "total_tokens": 1684,
+          "effective_tokens": 25444.0
+        },
+        "total_cost_usd": 0.16048574999999998,
+        "duration_ms": 22877,
+        "elapsed_seconds": 24.04,
+        "tool_calls": [
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "config",
+              "output_mode": "files_with_matches",
+              "-i": true
+            }
+          },
+          {
+            "name": "Glob",
+            "input": {
+              "pattern": "**/*config*.py"
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "def .*(config|Config|setting|Setting)",
+              "output_mode": "content",
+              "-n": true,
+              "type": "py"
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "def (load|save|validate|reset|parse|read|write)_",
+              "output_mode": "content",
+              "-n": true,
+              "type": "py"
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "def .*[Cc]onfig",
+              "output_mode": "content",
+              "-n": true,
+              "type": "py"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "p-example-2",
+        "question_id": "lookup_3",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nList all functions or methods related to configuration management (loading, saving, validating, or resetting configuration).",
+        "answer": "The bindwood code graph database isn't available for this project \u2014 it needs to be built first with `bindwood scan`. Without it, I can't use the MCP tools listed in my instructions.\n\nWould you like to:\n1. Run `bindwood scan` to build the graph, then I can answer using those tools, or\n2. Have me fall back to standard file tools (Glob/Grep/Read) to find configuration-related functions?",
+        "turns": 4,
+        "usage": {
+          "input_tokens": 19,
+          "output_tokens": 1,
+          "cache_creation_input_tokens": 18568,
+          "cache_read_input_tokens": 27868,
+          "total_tokens": 20,
+          "effective_tokens": 26016.8
+        },
+        "result_usage": {
+          "input_tokens": 7,
+          "output_tokens": 322,
+          "cache_creation_input_tokens": 6456,
+          "cache_read_input_tokens": 16962,
+          "total_tokens": 329,
+          "effective_tokens": 10095.2
+        },
+        "total_cost_usd": 0.057362,
+        "duration_ms": 7162,
+        "elapsed_seconds": 8.83,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__search_code",
+            "input": {
+              "query": "configuration management load save validate reset",
+              "limit": 20
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    }
+  ],
+  "summary": {
+    "baseline_total_tokens": 962,
+    "bindwood_total_tokens": 315,
+    "baseline_effective_tokens": 116537.2,
+    "bindwood_effective_tokens": 68720.1,
+    "tokens_delta": -647,
+    "effective_tokens_delta": -47817.1,
+    "savings_pct": 67.26,
+    "effective_savings_pct": 41.03,
+    "judge_wins": {},
+    "runs_count": 3,
+    "runs_by_type": {
+      "python": 3
+    }
+  }
+}

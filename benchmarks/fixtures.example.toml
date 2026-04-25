@@ -1,0 +1,86 @@
+# Benchmark fixture configuration.
+#
+# Copy this file to benchmarks/fixtures.toml and edit the values.
+#
+# The bindwood MCP server resolves its own database from your bindwood config,
+# so there's no db_path here — the harness just spawns `bindwood mcp` and
+# bindwood does the rest. Run `bindwood list` to see the targets available
+# and confirm each one below matches.
+#
+# `path` is the project root for code targets and the .sql file for DDL.
+
+# ── DDL ──────────────────────────────────────────────────────
+[[repos]]
+name    = "ddl1"
+type    = "ddl"
+path    = "/home/robin/Repositories/Samples/DDL/ddl1.sql"
+target  = "ddl1"
+
+[[repos]]
+name    = "ddl2"
+type    = "ddl"
+path    = "/home/robin/Repositories/Samples/DDL/ddl2.sql"
+target  = "ddl2"
+
+[[repos]]
+name    = "ddl3"
+type    = "ddl"
+path    = "/home/robin/Repositories/Samples/DDL/ddl3.sql"
+target  = "ddl3"
+
+# ── Python ───────────────────────────────────────────────────
+[[repos]]
+name    = "p-example-1"
+type    = "python"
+path    = "/home/robin/Repositories/Samples/Python/p-example-1"
+target  = "p-example-1"
+
+[[repos]]
+name    = "p-example-2"
+type    = "python"
+path    = "/home/robin/Repositories/Samples/Python/p-example-2"
+target  = "p-example-2"
+
+[[repos]]
+name    = "p-example-3"
+type    = "python"
+path    = "/home/robin/Repositories/Samples/Python/p-example-3"
+target  = "p-example-3"
+
+# ── JavaScript ───────────────────────────────────────────────
+[[repos]]
+name    = "j-example-1"
+type    = "javascript"
+path    = "/home/robin/Repositories/Samples/Javascript/j-example-1"
+target  = "j-example-1"
+
+[[repos]]
+name    = "j-example-2"
+type    = "javascript"
+path    = "/home/robin/Repositories/Samples/Javascript/j-example-2"
+target  = "j-example-2"
+
+[[repos]]
+name    = "j-example-3"
+type    = "javascript"
+path    = "/home/robin/Repositories/Samples/Javascript/j-example-3"
+target  = "j-example-3"
+
+# ── TypeScript ───────────────────────────────────────────────
+[[repos]]
+name    = "t-example-1"
+type    = "typescript"
+path    = "/home/robin/Repositories/Samples/Typescript/t-example-1"
+target  = "t-example-1"
+
+[[repos]]
+name    = "t-example-2"
+type    = "typescript"
+path    = "/home/robin/Repositories/Samples/Typescript/t-example-2"
+target  = "t-example-2"
+
+[[repos]]
+name    = "t-example-3"
+type    = "typescript"
+path    = "/home/robin/Repositories/Samples/Typescript/t-example-3"
+target  = "t-example-3"

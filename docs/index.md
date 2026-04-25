@@ -79,4 +79,8 @@ flowchart LR
 
     Browser UI for humans — project graph, skeleton treemap, label heatmap.
 
+-   :material-code-braces: **[Library API](library.md)**
+
+    Use bindwood programmatically from your own Python application.
+
 </div>

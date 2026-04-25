@@ -69,10 +69,14 @@ def locate_spans(ddl_text: str) -> dict:
     """
     result: dict[str, dict[str, dict]] = {"tables": {}, "views": {}, "enums": {}}
 
+    # The identifier may be bare, schema-qualified (Postgres ``public.``,
+    # MySQL ``dbname.``), or wrapped in backticks (MySQL) / double quotes
+    # (standard SQL / Postgres quoted identifiers).
+    qualified_ident = r"(?:[`\"]?\w+[`\"]?\.)?[`\"]?(\w+)[`\"]?"
     patterns = [
-        ("tables", r"CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+(?:public\.)?(\w+)\b"),
-        ("views", r"CREATE\s+(?:MATERIALIZED\s+)?VIEW(?:\s+IF\s+NOT\s+EXISTS)?\s+(?:public\.)?(\w+)\b"),
-        ("enums", r"CREATE\s+TYPE\s+(?:public\.)?(\w+)\s+AS\s+ENUM\b"),
+        ("tables", rf"CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+{qualified_ident}\b"),
+        ("views", rf"CREATE\s+(?:MATERIALIZED\s+)?VIEW(?:\s+IF\s+NOT\s+EXISTS)?\s+{qualified_ident}\b"),
+        ("enums", rf"CREATE\s+TYPE\s+{qualified_ident}\s+AS\s+ENUM\b"),
     ]
 
     for kind, pat in patterns:
@@ -102,15 +106,24 @@ def locate_spans(ddl_text: str) -> dict:
 
 
 def strip_public(name: str) -> str:
-    """Remove public. prefix and double quotes from identifier."""
-    return name.replace('"', '').removeprefix("public.")
+    """Normalise a possibly schema-qualified identifier to its bare name.
+
+    Drops any ``<schema>.`` prefix (not just ``public.``) and removes
+    surrounding double quotes. Keeping this consistent with the regex
+    extractors — which capture only the bare identifier via ``(\\w+)`` —
+    ensures ``tables[name]`` keys line up across all code paths.
+    """
+    name = name.replace('"', '')
+    if "." in name:
+        name = name.rsplit(".", 1)[-1]
+    return name
 
 
 def extract_enums(ddl_text: str) -> dict[str, list[str]]:
-    """Extract CREATE TYPE ... AS ENUM via regex."""
+    """Extract CREATE TYPE ... AS ENUM via regex (any schema)."""
     enums = {}
-    pattern = r"CREATE TYPE public\.(\w+) AS ENUM \(\s*([\s\S]*?)\);"
-    for match in re.finditer(pattern, ddl_text):
+    pattern = r'CREATE\s+TYPE\s+(?:"?\w+"?\.)?"?(\w+)"?\s+AS\s+ENUM\s*\(\s*([\s\S]*?)\);'
+    for match in re.finditer(pattern, ddl_text, re.IGNORECASE):
         name = match.group(1)
         values = [v.strip().strip("'") for v in match.group(2).split(",") if v.strip()]
         enums[name] = values
@@ -137,26 +150,30 @@ def extract_comments(ddl_text: str) -> dict:
     """
     result = {"tables": {}, "columns": {}, "views": {}}
 
-    # COMMENT ON TABLE public.foo IS '...';
+    qualified = r'(?:"?\w+"?\.)?"?(\w+)"?'
+
+    # COMMENT ON TABLE <schema>.foo IS '...';
     for m in re.finditer(
-        r"COMMENT\s+ON\s+TABLE\s+(?:public\.)?(\w+)\s+IS\s+('(?:[^']|'')*')\s*;",
+        rf"COMMENT\s+ON\s+TABLE\s+{qualified}\s+IS\s+('(?:[^']|'')*')\s*;",
         ddl_text,
         re.IGNORECASE,
     ):
         result["tables"][m.group(1)] = _unquote_sql_string(m.group(2))
 
-    # COMMENT ON COLUMN public.foo.bar IS '...';
+    # COMMENT ON COLUMN <schema>.foo.bar IS '...';
     for m in re.finditer(
-        r"COMMENT\s+ON\s+COLUMN\s+(?:public\.)?(\w+)\.(\w+)\s+IS\s+('(?:[^']|'')*')\s*;",
+        r'COMMENT\s+ON\s+COLUMN\s+(?:"?\w+"?\.)?"?(\w+)"?\.\s*"?(\w+)"?\s+IS\s+'
+        r"('(?:[^']|'')*')\s*;",
         ddl_text,
         re.IGNORECASE,
     ):
         table, column, raw = m.group(1), m.group(2), m.group(3)
         result["columns"].setdefault(table, {})[column] = _unquote_sql_string(raw)
 
-    # COMMENT ON VIEW / MATERIALIZED VIEW public.foo IS '...';
+    # COMMENT ON VIEW / MATERIALIZED VIEW <schema>.foo IS '...';
     for m in re.finditer(
-        r"COMMENT\s+ON\s+(?:MATERIALIZED\s+)?VIEW\s+(?:public\.)?(\w+)\s+IS\s+('(?:[^']|'')*')\s*;",
+        rf"COMMENT\s+ON\s+(?:MATERIALIZED\s+)?VIEW\s+{qualified}\s+IS\s+"
+        r"('(?:[^']|'')*')\s*;",
         ddl_text,
         re.IGNORECASE,
     ):

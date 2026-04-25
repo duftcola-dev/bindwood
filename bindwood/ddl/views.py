@@ -5,16 +5,19 @@ from __future__ import annotations
 import re
 
 
+_QUALIFIED = r'(?:"?\w+"?\.)?"?(\w+)"?'
+
+
 def extract_views(ddl_text: str, table_names: set[str]) -> dict:
     """Extract CREATE [MATERIALIZED] VIEW definitions and their source tables."""
     views = {}
 
     pattern = (
-        r"CREATE (MATERIALIZED )?VIEW public\.(\w+) AS\s+"
+        rf'CREATE\s+(MATERIALIZED\s+)?VIEW\s+{_QUALIFIED}\s+AS\s+'
         r"([\s\S]*?);"
     )
 
-    for match in re.finditer(pattern, ddl_text):
+    for match in re.finditer(pattern, ddl_text, re.IGNORECASE):
         materialized = bool(match.group(1))
         view_name = match.group(2)
         view_body = match.group(3)
@@ -90,7 +93,13 @@ def _extract_view_columns(view_body: str) -> list[dict]:
 
 
 def _extract_source_tables(view_body: str, table_names: set[str], view_name: str) -> set[str]:
-    """Extract all table/view names referenced in FROM/JOIN clauses."""
-    refs = set(re.findall(r"public\.(\w+)", view_body))
+    """Extract all table/view names referenced in FROM/JOIN clauses.
+
+    Matches schema-qualified references of the form ``<schema>.<name>``
+    regardless of which schema. Bare references without a schema prefix
+    aren't captured — pg_dump always emits qualified refs, and matching
+    bare words would pull in SQL keywords and column names.
+    """
+    refs = set(re.findall(r'(?<![.\w])(?:"?\w+"?\.)"?(\w+)"?', view_body))
     refs.discard(view_name)
     return refs & table_names

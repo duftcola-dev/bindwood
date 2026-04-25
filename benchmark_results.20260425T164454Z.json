@@ -1,0 +1,561 @@
+{
+  "run_metadata": {
+    "started_at": "2026-04-25T16:44:54.397308+00:00",
+    "finished_at": "2026-04-25T16:48:18.144174+00:00",
+    "duration_seconds": 203.75
+  },
+  "runs": [
+    {
+      "repo": "p-example-2",
+      "type": "python",
+      "target": "p-example-2",
+      "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+      "question": {
+        "id": "struct_1",
+        "tier": "structural",
+        "text": "Pick the most central module in this project \u2014 the one most other modules depend on. What does it import, and which modules import it?"
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "p-example-2",
+        "question_id": "struct_1",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nPick the most central module in this project \u2014 the one most other modules depend on. What does it import, and which modules import it?",
+        "answer": "The most central module is **`binance/helpers.py`** \u2014 it has the highest fan-in within the package (imported by 7 other modules), and depends on only one internal module itself.\n\n**What `binance/helpers.py` imports**\n- Stdlib: `asyncio`, `decimal.Decimal`, `json`, `typing`, `datetime`\n- Third-party: `dateparser`, `pytz`\n- Internal: `from binance.exceptions import UnknownDateFormat` (helpers.py:11)\n\n**Modules that import `binance/helpers.py`**\n1. `binance/base_client.py:20` \u2014 `from .helpers import get_loop`\n2. `binance/client.py:11` \u2014 `from .helpers import (...)`\n3. `binance/async_client.py:16` \u2014 `from binance.helpers import (...)`\n4. `binance/ws/reconnecting_websocket.py:41` \u2014 `from binance.helpers import get_loop`\n5. `binance/ws/streams.py:16` \u2014 `from binance.helpers import get_loop`\n6. `binance/ws/threaded_stream.py:7` \u2014 `from binance.helpers import get_loop`\n7. `binance/ws/depthcache.py:7` \u2014 `from ..helpers import get_loop`\n\nNote: `binance/exceptions.py` is a close second (6 importers) and is the only internal dependency of `helpers.py` \u2014 so `exceptions.py` is the deepest leaf, while `helpers.py` is the most widely-used utility hub. The dominant export is `get_loop`, used across both the sync/async clients and every websocket-layer module.",
+        "turns": 8,
+        "usage": {
+          "input_tokens": 18,
+          "output_tokens": 227,
+          "cache_creation_input_tokens": 16990,
+          "cache_read_input_tokens": 118293,
+          "total_tokens": 245,
+          "effective_tokens": 33311.8
+        },
+        "result_usage": {
+          "input_tokens": 10,
+          "output_tokens": 1756,
+          "cache_creation_input_tokens": 9089,
+          "cache_read_input_tokens": 76063,
+          "total_tokens": 1766,
+          "effective_tokens": 20733.5
+        },
+        "total_cost_usd": 0.13924475,
+        "duration_ms": 24365,
+        "elapsed_seconds": 25.51,
+        "tool_calls": [
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls /home/robin/Repositories/Samples/Python/p-example-2",
+              "description": "List project root directory"
+            }
+          },
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls /home/robin/Repositories/Samples/Python/p-example-2/binance",
+              "description": "List binance package directory"
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "^(from|import)\\s+\\S*binance\\S*",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance",
+              "output_mode": "content",
+              "-n": true
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "^(from|import)\\s+\\.\\S*",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance",
+              "output_mode": "content",
+              "-n": true
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/helpers.py",
+              "limit": 20
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "p-example-2",
+        "question_id": "struct_1",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nPick the most central module in this project \u2014 the one most other modules depend on. What does it import, and which modules import it?",
+        "answer": "The bindwood code graph hasn't been built for this project yet \u2014 the database file at `graph/code_graph.db` doesn't exist. I can't answer the centrality question via the graph tools until it's scanned.\n\nTo proceed, you'd need to run `bindwood scan` in the project root, then I can call `graph_overview` and walk the import edges to find the most-depended-on module. Want me to run the scan, or would you prefer to do it yourself?",
+        "turns": 4,
+        "usage": {
+          "input_tokens": 14,
+          "output_tokens": 76,
+          "cache_creation_input_tokens": 23392,
+          "cache_read_input_tokens": 23022,
+          "total_tokens": 90,
+          "effective_tokens": 31632.2
+        },
+        "result_usage": {
+          "input_tokens": 7,
+          "output_tokens": 294,
+          "cache_creation_input_tokens": 11696,
+          "cache_read_input_tokens": 11511,
+          "total_tokens": 301,
+          "effective_tokens": 16072.1
+        },
+        "total_cost_usd": 0.08670749999999999,
+        "duration_ms": 7051,
+        "elapsed_seconds": 8.7,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "p-example-2",
+      "type": "python",
+      "target": "p-example-2",
+      "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+      "question": {
+        "id": "struct_2",
+        "tier": "structural",
+        "text": "Trace the call chain from a top-level public API function down to low-level I/O (network, file, or database). What are the intermediate layers?"
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "p-example-2",
+        "question_id": "struct_2",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nTrace the call chain from a top-level public API function down to low-level I/O (network, file, or database). What are the intermediate layers?",
+        "answer": "Here is the call chain, traced from a top-level public API method all the way down to the network socket. I'll use `Client.get_account()` as the example since it exercises the full signed-request path; unsigned methods like `Client.ping()` follow the same chain minus the signature step.\n\n## Call chain: `Client.get_account()` \u2192 HTTP socket\n\n| # | Layer | Where | Responsibility |\n|---|-------|-------|---------------|\n| 1 | **Public API method** | `binance/client.py` (e.g., `Client.get_account` at `client.py:2224`, `Client.ping` at `client.py:359`) | Endpoint-specific surface \u2014 names a Binance REST path and calls one of the verb helpers (`self._get`, `self._post`, \u2026). |\n| 2 | **HTTP-verb helper** | `Client._get` / `_post` / `_put` / `_delete` (`client.py:204-220`) | Thin wrapper that maps the HTTP verb to `_request_api(method, path, signed, version, ...)`. |\n| 3 | **API-family router** | `Client._request_api`, `_request_futures_api`, `_request_margin_api`, `_request_papi_api`, `_request_options_api`, `_request_website`, etc. (`client.py:130-202`) | Picks the right base URL/version for the API family by calling the matching `_create_*_api_uri` builder, then delegates to `_request`. |\n| 4 | **URI builder** | `BaseClient._create_api_uri` and siblings (`base_client.py:276-341`) | Resolves `API_URL`/testnet/demo + version into the final `https://\u2026` URL. |\n| 5 | **Generic request orchestrator** | `Client._request` (`client.py:65-111`) | Sets per-method headers, calls `_get_request_kwargs`, then dispatches via `getattr(self.session, method)(...)`. |\n| 6 | **Request-prep / signing** | `BaseClient._get_request_kwargs` (`base_client.py:498`) plus `_generate_signature` (`base_client.py:393`) and `_get_headers` (`base_client.py:244`) | Adds timeout + global `requests_params`, injects `timestamp` / `recvWindow`, computes HMAC/RSA/EdDSA signature for signed calls, sorts params, moves `data` \u2192 `params` for GETs. |\n| 7 | **Session/transport** | `Client._init_session` (`client.py:58-63`) returning `requests.Session` (configured once with `X-MBX-APIKEY` headers) | Holds connection pooling, default headers, TLS context. The actual call is `self.session.get/post/...` at `client.py:95`. |\n| 8 | **Low-level I/O** | `requests` \u2192 `urllib3` \u2192 `http.client` \u2192 OS TCP/TLS socket | Performs DNS, opens (or reuses) the HTTPS connection, writes the request, reads the response. |\n| 9 | **Response decode** | `Client._handle_response` (`client.py:113-128`) | Inspects status code (raises `BinanceAPIException` on non-2xx), decodes JSON body (raises `BinanceRequestException` on bad JSON). |\n\n## Concrete trace for `client.get_account()`\n\n```\nClient.get_account(**params)                     # client.py:2224  (public surface)\n  \u2514\u2500 self._request_margin_api(\"get\", \"account\", True, data=params)\n       \u2514\u2500 Client._request_margin_api             # client.py:183\n            \u251c\u2500 BaseClient._get_version\n            \u251c\u2500 BaseClient._create_margin_api_uri # base_client.py:287  \u2192 builds full URL\n            \u2514\u2500 Client._request(\"get\", uri, signed=True, ...)   # client.py:65\n                 \u251c\u2500 BaseClient._get_request_kwargs            # base_client.py:498\n                 \u2502     \u2514\u2500 BaseClient._generate_signature      # base_client.py:393  (HMAC/RSA/EdDSA)\n                 \u251c\u2500 self.session.get(uri, headers=\u2026, params=\u2026, timeout=\u2026)\n                 \u2502     \u2514\u2500 requests.Session.get \u2192 urllib3 \u2192 http.client \u2192 TLS socket\n                 \u2514\u2500 Client._handle_response(response)         # client.py:113\n                       \u2514\u2500 response.json()                     # network I/O complete\n```\n\n## Notes on the parallel async path\n\n`AsyncClient` mirrors the same layering, with the transport swapped:\n\n- Steps 1\u20136 have async twins in `binance/async_client.py` (`AsyncClient.get_account`, `_request_margin_api`, `_request`, plus shared `_get_request_kwargs`/`_create_*_api_uri` from `BaseClient`).\n- Step 7 uses **`aiohttp.ClientSession`** instead of `requests.Session`.\n- Step 8 bottoms out in `aiohttp` \u2192 `asyncio` transports \u2192 socket.\n\nSo the architectural layers are: **public endpoint methods \u2192 verb helpers (`_get/_post/...`) \u2192 API-family routers (`_request_*_api`) \u2192 URI builders (`_create_*_api_uri`) \u2192 generic `_request` orchestrator \u2192 request-kwargs/signing/headers helpers \u2192 HTTP session (`requests` or `aiohttp`) \u2192 OS socket \u2192 response handler**. The `BaseClient` owns everything that is transport-agnostic (URL building, signing, header/param prep); `Client` and `AsyncClient` only differ in the session type and the sync vs. async `_request` implementation.",
+        "turns": 14,
+        "usage": {
+          "input_tokens": 24,
+          "output_tokens": 711,
+          "cache_creation_input_tokens": 23180,
+          "cache_read_input_tokens": 248219,
+          "total_tokens": 735,
+          "effective_tokens": 54531.9
+        },
+        "result_usage": {
+          "input_tokens": 17,
+          "output_tokens": 3637,
+          "cache_creation_input_tokens": 16368,
+          "cache_read_input_tokens": 213977,
+          "total_tokens": 3654,
+          "effective_tokens": 45511.7
+        },
+        "total_cost_usd": 0.3007875,
+        "duration_ms": 67088,
+        "elapsed_seconds": 68.28,
+        "tool_calls": [
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls /home/robin/Repositories/Samples/Python/p-example-2",
+              "description": "List project root directory"
+            }
+          },
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls /home/robin/Repositories/Samples/Python/p-example-2/binance",
+              "description": "List binance package contents"
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/__init__.py"
+            }
+          },
+          {
+            "name": "Bash",
+            "input": {
+              "command": "wc -l /home/robin/Repositories/Samples/Python/p-example-2/binance/client.py /home/robin/Repositories/Samples/Python/p-example-2/binance/base_client.py /home/robin/Repositories/Samples/Python/p-example-2/binance/async_client.py",
+              "description": "Get line counts for client files"
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "def get_account|def get_symbol_ticker|def get_server_time|def ping\\b|def get_klines",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/client.py",
+              "output_mode": "content",
+              "-n": true,
+              "head_limit": 20
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/client.py",
+              "offset": 355,
+              "limit": 40
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "def _get\\b|def _post\\b|def _request\\b|def _request_api\\b|def _handle_response|def _create_api_uri|def _init_session",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/client.py",
+              "output_mode": "content",
+              "-n": true
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/client.py",
+              "offset": 1,
+              "limit": 230
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "def _create_api_uri|def _get_request_kwargs|def _get_headers|def _generate_signature",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/base_client.py",
+              "output_mode": "content",
+              "-n": true
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/base_client.py",
+              "offset": 244,
+              "limit": 100
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/base_client.py",
+              "offset": 498,
+              "limit": 56
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "p-example-2",
+        "question_id": "struct_2",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nTrace the call chain from a top-level public API function down to low-level I/O (network, file, or database). What are the intermediate layers?",
+        "answer": "The bindwood code graph hasn't been built for this project yet. The database needs to be generated before I can use the graph tools.\n\nWould you like me to:\n1. Run `bindwood scan` to build the graph (then trace the call chain), or\n2. Trace the call chain using regular file-reading tools (Read/Grep/Glob) instead?\n\nEither works \u2014 option 1 gives richer traversal but takes time to index; option 2 is more direct for a one-off trace.",
+        "turns": 4,
+        "usage": {
+          "input_tokens": 19,
+          "output_tokens": 25,
+          "cache_creation_input_tokens": 18427,
+          "cache_read_input_tokens": 27878,
+          "total_tokens": 44,
+          "effective_tokens": 25865.5
+        },
+        "result_usage": {
+          "input_tokens": 7,
+          "output_tokens": 292,
+          "cache_creation_input_tokens": 6295,
+          "cache_read_input_tokens": 16972,
+          "total_tokens": 299,
+          "effective_tokens": 9865.0
+        },
+        "total_cost_usd": 0.055663750000000005,
+        "duration_ms": 6750,
+        "elapsed_seconds": 8.46,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "p-example-2",
+      "type": "python",
+      "target": "p-example-2",
+      "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+      "question": {
+        "id": "struct_3",
+        "tier": "structural",
+        "text": "Which functions are responsible for low-level I/O \u2014 executing network requests, reading/writing files, or running database queries? Show their names and files."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "p-example-2",
+        "question_id": "struct_3",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nWhich functions are responsible for low-level I/O \u2014 executing network requests, reading/writing files, or running database queries? Show their names and files.",
+        "answer": "The project is `python-binance`, an HTTP + WebSocket SDK \u2014 no database queries are made anywhere in the codebase. Low-level I/O is concentrated in three layers:\n\n## HTTP requests (REST)\n\nSync (uses `requests`) \u2014 `binance/client.py`:\n- `Client._init_session` \u2014 `client.py:58` (creates `requests.Session`)\n- `Client._request` \u2014 `client.py:65` (the actual HTTP call: `getattr(self.session, method)(...)` at line 95)\n- `Client._handle_response` \u2014 `client.py:114`\n- Per-product wrappers that build a URI then call `_request`: `_request_api` (`client.py:130`), `_request_futures_api` (`:141`), `_request_futures_data_api` (`:150`), `_request_futures_coin_api` (`:156`), `_request_futures_coin_data_api` (`:165`), `_request_options_api` (`:174`), `_request_margin_api` (`:183`), `_request_papi_api` (`:192`), `_request_website` (`:200`)\n- Verb shortcuts: `_get` (`:204`), `_post` (`:207`), `_put` (`:212`), `_delete` (`:217`)\n\nAsync (uses `aiohttp`) \u2014 `binance/async_client.py`:\n- `AsyncClient._init_session` \u2014 `async_client.py:120` (creates `aiohttp.ClientSession`)\n- `AsyncClient._request` \u2014 `async_client.py:136` (the actual call at line 177)\n- `AsyncClient._handle_response` \u2014 `async_client.py:201`\n- `AsyncClient.close_connection` \u2014 `async_client.py:126`\n- Verb shortcuts: `_get` (`:291`), `_post` (`:296`), `_put` (`:301`), `_delete` (`:306`)\n\n## WebSocket I/O\n\n`binance/ws/reconnecting_websocket.py`:\n- `ReconnectingWebsocket.connect` \u2014 `:114` (opens the socket via `ws.connect` / `proxy_connect` at lines 130/134)\n- `ReconnectingWebsocket._read_loop` \u2014 `:184` (calls `self.ws.recv()` at line 207)\n- `ReconnectingWebsocket.recv` \u2014 `:280`\n- `ReconnectingWebsocket._run_reconnect` \u2014 `:262`\n- `ReconnectingWebsocket.close` \u2014 `:99`\n\n`binance/ws/keepalive_websocket.py`:\n- `KeepAliveWebsocket.connect` \u2014 `:125`\n- `KeepAliveWebsocket.recv` \u2014 `:145`\n- `KeepAliveWebsocket._keepalive_socket` \u2014 `:247`\n- `KeepAliveWebsocket._get_listen_key` \u2014 `:229` (HTTP-over-client to refresh the listen key)\n\n`binance/ws/websocket_api.py`:\n- `WebsocketAPI._ensure_ws_connection` \u2014 `:107`\n- `WebsocketAPI.request` \u2014 `:153` (sends a frame via `self.ws.send(...)` at line 167)\n\n`binance/ws/threaded_stream.py`:\n- `ThreadedApiManager.start_listener` \u2014 `:72`\n- `ThreadedApiManager.socket_listener` \u2014 `:59`\n\n## File I/O\n\nOnly one disk read in the whole package:\n- `BaseClient._init_private_key` \u2014 `binance/base_client.py:258` (reads a PEM file at line 269 when `private_key` is a `Path`)\n\nJSON-string serialization helpers (no disk):\n- `ReconnectingWebsocket.json_dumps` / `json_loads` \u2014 `binance/ws/reconnecting_websocket.py:85`/`:90`\n- `BinanceAPIException.__init__`'s `json.loads` of the response body \u2014 `binance/exceptions.py:9`\n- `interval_to_milliseconds`-adjacent helper using `json.dumps` \u2014 `binance/helpers.py:87`\n\nIf you want me to expand any one layer (e.g., trace which public methods call `_request` for futures vs. spot), let me know.",
+        "turns": 21,
+        "usage": {
+          "input_tokens": 31,
+          "output_tokens": 1040,
+          "cache_creation_input_tokens": 35718,
+          "cache_read_input_tokens": 466841,
+          "total_tokens": 1071,
+          "effective_tokens": 92402.6
+        },
+        "result_usage": {
+          "input_tokens": 23,
+          "output_tokens": 4606,
+          "cache_creation_input_tokens": 25440,
+          "cache_read_input_tokens": 396967,
+          "total_tokens": 4629,
+          "effective_tokens": 76125.7
+        },
+        "total_cost_usd": 0.4732445,
+        "duration_ms": 80049,
+        "elapsed_seconds": 81.15,
+        "tool_calls": [
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls /home/robin/Repositories/Samples/Python/p-example-2",
+              "description": "List project root directory"
+            }
+          },
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls /home/robin/Repositories/Samples/Python/p-example-2/binance",
+              "description": "List binance package contents"
+            }
+          },
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls /home/robin/Repositories/Samples/Python/p-example-2/binance/ws",
+              "description": "List ws subpackage"
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "requests\\.|session\\.|httpx|aiohttp|urlopen|urllib|websocket|ws_connect|connect\\(|\\.get\\(|\\.post\\(|\\.put\\(|\\.delete\\(|open\\(|json\\.load|json\\.dump|sqlite|psycopg|asyncpg|pymongo|redis",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance",
+              "output_mode": "files_with_matches"
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "^\\s*(async\\s+)?def\\s+\\w+|requests\\.|self\\.session|self\\._session|aiohttp|httpx|websockets\\.|ws_connect|connect\\(|open\\(",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/client.py",
+              "output_mode": "content",
+              "head_limit": 60
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/client.py",
+              "offset": 55,
+              "limit": 230
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "^\\s*(async\\s+)?def\\s+_(init_session|request|handle_response|get|post|put|delete)\\b",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/async_client.py",
+              "output_mode": "content",
+              "-n": true
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "^\\s*(async\\s+)?def\\s+\\w+|websocket|connect\\(|ws_connect|aiohttp|recv|send",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/ws/reconnecting_websocket.py",
+              "output_mode": "content",
+              "-n": true
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "^\\s*(async\\s+)?def\\s+\\w+|websocket|ws\\.|connect\\(|recv|send|aiohttp",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/ws/keepalive_websocket.py",
+              "output_mode": "content",
+              "-n": true
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "^\\s*(async\\s+)?def\\s+\\w+|ws\\.|websocket|connect\\(|recv|send|request|aiohttp",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/ws/websocket_api.py",
+              "output_mode": "content",
+              "-n": true
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "^\\s*(async\\s+)?def\\s+\\w+|aiohttp|requests\\.|websocket|connect\\(|open\\(|json\\.dump|json\\.load",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/ws/streams.py",
+              "output_mode": "content",
+              "-n": true,
+              "head_limit": 100
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "^\\s*(async\\s+)?def\\s+\\w+|aiohttp|requests\\.|urlopen|connect\\(|open\\(",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/ws/depthcache.py",
+              "output_mode": "content",
+              "-n": true,
+              "head_limit": 60
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "^\\s*(async\\s+)?def\\s+\\w+",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/ws/threaded_stream.py",
+              "output_mode": "content",
+              "-n": true
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "open\\(|json\\.load|json\\.dump",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance",
+              "output_mode": "content",
+              "-n": true
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/base_client.py",
+              "offset": 255,
+              "limit": 40
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/async_client.py",
+              "offset": 115,
+              "limit": 95
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/ws/depthcache.py",
+              "offset": 200,
+              "limit": 170
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 5
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "p-example-2",
+        "question_id": "struct_3",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nWhich functions are responsible for low-level I/O \u2014 executing network requests, reading/writing files, or running database queries? Show their names and files.",
+        "answer": "The bindwood code graph database hasn't been built for this project yet \u2014 it requires running `bindwood scan` first. Without the index I can't query the graph for I/O functions.\n\nWant me to:\n1. Run `bindwood scan` to build the index, then answer the question, or\n2. Skip bindwood and grep the codebase directly (e.g., for `requests.`, `aiohttp`, `open(`, `sqlite3`, `cursor.execute`, etc.)?",
+        "turns": 6,
+        "usage": {
+          "input_tokens": 16,
+          "output_tokens": 157,
+          "cache_creation_input_tokens": 31467,
+          "cache_read_input_tokens": 38975,
+          "total_tokens": 173,
+          "effective_tokens": 43404.2
+        },
+        "result_usage": {
+          "input_tokens": 8,
+          "output_tokens": 520,
+          "cache_creation_input_tokens": 12886,
+          "cache_read_input_tokens": 22616,
+          "total_tokens": 528,
+          "effective_tokens": 18897.1
+        },
+        "total_cost_usd": 0.1053815,
+        "duration_ms": 9888,
+        "elapsed_seconds": 11.66,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__search_code",
+            "input": {
+              "query": "execute network HTTP request",
+              "limit": 10
+            }
+          },
+          {
+            "name": "mcp__bindwood__search_code",
+            "input": {
+              "query": "read write file disk I/O",
+              "limit": 10
+            }
+          },
+          {
+            "name": "mcp__bindwood__search_code",
+            "input": {
+              "query": "database query execute SQL",
+              "limit": 10
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 3
+        }
+      },
+      "judge": null
+    }
+  ],
+  "summary": {
+    "baseline_total_tokens": 2051,
+    "bindwood_total_tokens": 307,
+    "baseline_effective_tokens": 180246.3,
+    "bindwood_effective_tokens": 100901.9,
+    "tokens_delta": -1744,
+    "effective_tokens_delta": -79344.4,
+    "savings_pct": 85.03,
+    "effective_savings_pct": 44.02,
+    "judge_wins": {},
+    "runs_count": 3,
+    "runs_by_type": {
+      "python": 3
+    }
+  }
+}

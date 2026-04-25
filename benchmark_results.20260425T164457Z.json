@@ -1,0 +1,385 @@
+{
+  "run_metadata": {
+    "started_at": "2026-04-25T16:44:57.187386+00:00",
+    "finished_at": "2026-04-25T16:46:50.989185+00:00",
+    "duration_seconds": 113.8
+  },
+  "runs": [
+    {
+      "repo": "p-example-2",
+      "type": "python",
+      "target": "p-example-2",
+      "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+      "question": {
+        "id": "orient_1",
+        "tier": "orientation",
+        "text": "Give me an overview of this codebase: what are the main modules or packages, roughly how many files are there, and what does each top-level directory contain?"
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "p-example-2",
+        "question_id": "orient_1",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nGive me an overview of this codebase: what are the main modules or packages, roughly how many files are there, and what does each top-level directory contain?",
+        "answer": "## Codebase Overview: `python-binance`\n\nThis is the **`python_binance`** library \u2014 a Python implementation of the Binance exchange REST and WebSocket APIs (sync + async, spot/margin/futures/options).\n\n### File counts\n- **~75 Python files** total: 16 in the main package, ~40 tests, ~12 examples, plus a few top-level scripts.\n\n### Main package: `binance/` (sync + async client core)\n- `client.py` \u2014 synchronous REST client\n- `async_client.py` \u2014 asyncio REST client\n- `base_client.py` \u2014 shared logic for both clients\n- `enums.py`, `exceptions.py`, `helpers.py` \u2014 constants, custom exceptions, utilities\n- `__init__.py` \u2014 package version + exports\n\n### `binance/ws/` (WebSocket subsystem)\n- `streams.py` \u2014 high-level socket managers\n- `websocket_api.py` \u2014 WS-based request/response API\n- `reconnecting_websocket.py`, `keepalive_websocket.py` \u2014 connection lifecycle\n- `threaded_stream.py` \u2014 threaded wrapper for sync use\n- `depthcache.py` \u2014 local order book cache\n- `constants.py`\n\n### Top-level directories\n- **`tests/`** \u2014 ~40 pytest files covering REST, WS, futures, margin, options, portfolio, gift cards, depth cache, reconnection, error propagation, etc. Plus `conftest.py` and `utils.py`.\n- **`examples/`** \u2014 ~12 runnable scripts (order creation sync/async, websocket usage, depth cache, historical data, futures algos).\n- **`docs/`** \u2014 Sphinx documentation (`.rst` files for each API surface: account, market_data, margin, websockets, etc.) + `conf.py`.\n- **`.agents/skills/`** \u2014 agent skill definitions (likely tied to the recent \"LLM-friendly docs\" commit).\n- **`.github/`** \u2014 `CODEOWNERS`, issue templates, CI workflows.\n\n### Top-level scripts & config\n- `code-generator.py` (~20 KB) and `generate_llms_txt.py` \u2014 codegen / LLM-doc generation\n- `llms.txt`, `llms-full.txt`, `Endpoints.md` \u2014 generated reference material\n- `setup.py`, `pyproject.toml` (ruff + pytest config), `requirements.txt`, `tox.ini`, `pyrightconfig.json`, `.pre-commit-config.yaml`, `.readthedocs.yaml`\n- `README.rst`, `PYPIREADME.rst`, `LICENSE` (MIT)\n\n### Runtime dependencies\n`requests`, `aiohttp`, `websockets`, `dateparser`, `pycryptodome`, `six`.",
+        "turns": 7,
+        "usage": {
+          "input_tokens": 22,
+          "output_tokens": 160,
+          "cache_creation_input_tokens": 23678,
+          "cache_read_input_tokens": 99203,
+          "total_tokens": 182,
+          "effective_tokens": 39699.8
+        },
+        "result_usage": {
+          "input_tokens": 9,
+          "output_tokens": 1454,
+          "cache_creation_input_tokens": 9903,
+          "cache_read_input_tokens": 63161,
+          "total_tokens": 1463,
+          "effective_tokens": 20157.8
+        },
+        "total_cost_usd": 0.13033324999999998,
+        "duration_ms": 24187,
+        "elapsed_seconds": 25.34,
+        "tool_calls": [
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls -la /home/robin/Repositories/Samples/Python/p-example-2",
+              "description": "List top-level directory contents"
+            }
+          },
+          {
+            "name": "Glob",
+            "input": {
+              "pattern": "**/*.py"
+            }
+          },
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls /home/robin/Repositories/Samples/Python/p-example-2/docs /home/robin/Repositories/Samples/Python/p-example-2/.agents /home/robin/Repositories/Samples/Python/p-example-2/.github",
+              "description": "List docs, .agents, .github contents"
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/pyproject.toml"
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/setup.py"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "p-example-2",
+        "question_id": "orient_1",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nGive me an overview of this codebase: what are the main modules or packages, roughly how many files are there, and what does each top-level directory contain?",
+        "answer": "The bindwood code graph hasn't been built for this project yet \u2014 the database file at `graph/code_graph.db` doesn't exist, so I can't query the structure.\n\nTo get the overview you're asking for, the graph needs to be scanned first by running:\n\n```\nbindwood scan\n```\n\nfrom the project root. Once that's done, I can answer questions about modules, packages, file counts, and what each directory contains using the graph tools.\n\nWant me to wait while you run the scan, or is there something else I can help with in the meantime? (Note: I only have the bindwood MCP tools available in this session \u2014 no shell, file-read, or grep \u2014 so without the graph I can't inspect files directly.)",
+        "turns": 4,
+        "usage": {
+          "input_tokens": 14,
+          "output_tokens": 106,
+          "cache_creation_input_tokens": 24628,
+          "cache_read_input_tokens": 21812,
+          "total_tokens": 120,
+          "effective_tokens": 33086.2
+        },
+        "result_usage": {
+          "input_tokens": 7,
+          "output_tokens": 465,
+          "cache_creation_input_tokens": 12314,
+          "cache_read_input_tokens": 10906,
+          "total_tokens": 472,
+          "effective_tokens": 16955.1
+        },
+        "total_cost_usd": 0.0945395,
+        "duration_ms": 8647,
+        "elapsed_seconds": 10.32,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "p-example-2",
+      "type": "python",
+      "target": "p-example-2",
+      "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+      "question": {
+        "id": "orient_2",
+        "tier": "orientation",
+        "text": "List every public class defined in this project along with the file it lives in."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "p-example-2",
+        "question_id": "orient_2",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nList every public class defined in this project along with the file it lives in.",
+        "answer": "Here are all the top-level public classes defined in the project, grouped by file.\n\n### `binance/` package\n\n**`binance/base_client.py`**\n- `BaseClient` (line 23)\n\n**`binance/client.py`**\n- `Client` (line 24)\n\n**`binance/async_client.py`**\n- `AsyncClient` (line 26)\n\n**`binance/enums.py`**\n- `HistoricalKlinesType` (line 74)\n- `FuturesType` (line 84)\n- `ContractType` (line 89)\n\n**`binance/exceptions.py`**\n- `BinanceAPIException` (line 5)\n- `BinanceRequestException` (line 25)\n- `BinanceOrderException` (line 33)\n- `BinanceOrderMinAmountException` (line 42)\n- `BinanceOrderMinPriceException` (line 48)\n- `BinanceOrderMinTotalException` (line 54)\n- `BinanceOrderUnknownSymbolException` (line 60)\n- `BinanceOrderInactiveSymbolException` (line 66)\n- `BinanceWebsocketUnableToConnect` (line 72)\n- `BinanceWebsocketQueueOverflow` (line 76)\n- `BinanceWebsocketClosed` (line 80)\n- `ReadLoopClosed` (line 84)\n- `NotImplementedException` (line 88)\n- `UnknownDateFormat` (line 94)\n- `BinanceRegionException` (line 98)\n\n**`binance/ws/constants.py`**\n- `WSListenerState` (line 6)\n\n**`binance/ws/reconnecting_websocket.py`**\n- `ReconnectingWebsocket` (line 45)\n\n**`binance/ws/keepalive_websocket.py`**\n- `KeepAliveWebsocket` (line 8)\n\n**`binance/ws/websocket_api.py`**\n- `WebsocketAPI` (line 11)\n\n**`binance/ws/threaded_stream.py`**\n- `ThreadedApiManager` (line 10)\n\n**`binance/ws/streams.py`**\n- `BinanceSocketType` (line 19)\n- `BinanceSocketManager` (line 27)\n- `ThreadedWebsocketManager` (line 1375)\n\n**`binance/ws/depthcache.py`**\n- `DepthCache` (line 12)\n- `BaseDepthCacheManager` (line 138)\n- `DepthCacheManager` (line 298)\n- `FuturesDepthCacheManager` (line 410)\n- `OptionsDepthCacheManager` (line 434)\n- `ThreadedDepthCacheManager` (line 439)\n\n### `tests/` directory\n\n**`tests/test_ws_urls_integration.py`**\n- `TestPublicCategory` (line 61)\n- `TestMarketCategory` (line 108)\n- `TestMultiplex` (line 179)\n- `TestCoinMUnchanged` (line 202)\n- `TestPortfolioMarginUnchanged` (line 233)\n- `TestTestnetEnvironment` (line 246)\n- `TestDemoEnvironment` (line 269)\n- `TestSpotUnchanged` (line 308)\n\n**`tests/test_user_socket_integration.py`**\n- `TestUserSocketArchitecture` (line 29)\n- `TestUserSocketFunctionality` (line 102)\n- `TestNonUserSockets` (line 132)\n- `TestWsApiSubscriptionRouting` (line 150)\n\n**`tests/test_region_exception.py`**\n- `TestBinanceRegionException` (line 9)\n- `TestSyncClientRegionValidation` (line 33)\n- `TestAsyncClientRegionValidation` (line 87)\n\nTotal: **47 public classes** (33 in the library, 14 in tests).",
+        "turns": 4,
+        "usage": {
+          "input_tokens": 14,
+          "output_tokens": 90,
+          "cache_creation_input_tokens": 15082,
+          "cache_read_input_tokens": 51834,
+          "total_tokens": 104,
+          "effective_tokens": 24139.9
+        },
+        "result_usage": {
+          "input_tokens": 7,
+          "output_tokens": 1725,
+          "cache_creation_input_tokens": 7541,
+          "cache_read_input_tokens": 25917,
+          "total_tokens": 1732,
+          "effective_tokens": 13750.0
+        },
+        "total_cost_usd": 0.10369975,
+        "duration_ms": 17489,
+        "elapsed_seconds": 18.62,
+        "tool_calls": [
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "^class\\s+([A-Z][A-Za-z0-9_]*)",
+              "output_mode": "content",
+              "glob": "*.py",
+              "-n": true,
+              "head_limit": 0
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "p-example-2",
+        "question_id": "orient_2",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nList every public class defined in this project along with the file it lives in.",
+        "answer": "The bindwood code graph hasn't been built for this project yet \u2014 the database file `graph/code_graph.db` doesn't exist. To use the graph-based tools, the index needs to be created first by running `bindwood scan` in the project root.\n\nWould you like me to:\n1. Run `bindwood scan` to build the graph index, then answer your question, or\n2. Answer using plain file search (Glob/Grep) instead?",
+        "turns": 3,
+        "usage": {
+          "input_tokens": 13,
+          "output_tokens": 1,
+          "cache_creation_input_tokens": 12277,
+          "cache_read_input_tokens": 22402,
+          "total_tokens": 14,
+          "effective_tokens": 17600.5
+        },
+        "result_usage": {
+          "input_tokens": 7,
+          "output_tokens": 239,
+          "cache_creation_input_tokens": 6234,
+          "cache_read_input_tokens": 16949,
+          "total_tokens": 246,
+          "effective_tokens": 9733.4
+        },
+        "total_cost_usd": 0.053897,
+        "duration_ms": 5409,
+        "elapsed_seconds": 7.08,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "p-example-2",
+      "type": "python",
+      "target": "p-example-2",
+      "path": "/home/robin/Repositories/Samples/Python/p-example-2",
+      "question": {
+        "id": "orient_3",
+        "tier": "orientation",
+        "text": "What entry points does this project expose? Look for CLI commands, HTTP routes, public module-level functions, or __main__ blocks."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "p-example-2",
+        "question_id": "orient_3",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nWhat entry points does this project expose? Look for CLI commands, HTTP routes, public module-level functions, or __main__ blocks.",
+        "answer": "Here's what this project exposes as entry points:\n\n## Distribution / CLI\n\nThis is a **library package** (`python_binance`) \u2014 `setup.py` defines no `console_scripts` / `entry_points`, so it installs no CLI commands. There are no HTTP routes either; the project is a *client* for Binance's REST and WebSocket APIs.\n\n## Public package surface (`binance/__init__.py`)\n\nThe package re-exports its public API at the top level:\n\n- **REST clients** \u2014 `Client` (binance/client.py:24), `AsyncClient` (binance/async_client.py:26), with shared base `BaseClient` (binance/base_client.py:23)\n- **WebSocket managers** \u2014 `BinanceSocketManager`, `ThreadedWebsocketManager`, `BinanceSocketType` (binance/ws/streams.py:19,27,1375)\n- **Depth-cache managers** \u2014 `DepthCacheManager`, `FuturesDepthCacheManager`, `OptionsDepthCacheManager`, `ThreadedDepthCacheManager` (binance/ws/depthcache.py:298,410,434,439)\n- **Lower-level WS primitives** \u2014 `ReconnectingWebsocket` (binance/ws/reconnecting_websocket.py:45), `KeepAliveWebsocket` (binance/ws/keepalive_websocket.py:8)\n- **Wildcard re-exports** \u2014 constants from `binance.ws.constants`, exceptions from `binance.exceptions` (e.g. `BinanceAPIException`), and enums from `binance.enums` (e.g. `HistoricalKlinesType`)\n\n## Public module-level functions\n\nIn `binance/helpers.py`:\n- `date_to_milliseconds` (binance/helpers.py:14)\n- `interval_to_milliseconds` (binance/helpers.py:38)\n- `round_step_size` (binance/helpers.py:62)\n- `convert_ts_str` (binance/helpers.py:76)\n- `convert_list_to_json_array` (binance/helpers.py:84)\n- `get_loop` (binance/helpers.py:91)\n\n## `__main__` blocks\n\nNone inside the installed package. The `if __name__ == \"__main__\":` blocks live only in:\n- **Repo-level dev scripts** \u2014 `code-generator.py:515`, `generate_llms_txt.py:477`\n- **`examples/`** \u2014 `websocket.py`, `depth_cache_example.py`, `depth_cache_threaded_example.py`, `binace_socket_manager.py`, `verbose_example.py`, `futures_algo_order_examples.py`\n- **`tests/test_user_socket_integration.py:190`**\n\nSo in practice, the only \"entry point\" a user has is `import binance` and instantiating `Client` / `AsyncClient` / the socket managers.",
+        "turns": 13,
+        "usage": {
+          "input_tokens": 23,
+          "output_tokens": 584,
+          "cache_creation_input_tokens": 18103,
+          "cache_read_input_tokens": 216741,
+          "total_tokens": 607,
+          "effective_tokens": 44909.9
+        },
+        "result_usage": {
+          "input_tokens": 15,
+          "output_tokens": 2232,
+          "cache_creation_input_tokens": 11530,
+          "cache_read_input_tokens": 170075,
+          "total_tokens": 2247,
+          "effective_tokens": 33667.0
+        },
+        "total_cost_usd": 0.213442,
+        "duration_ms": 41620,
+        "elapsed_seconds": 42.8,
+        "tool_calls": [
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls /home/robin/Repositories/Samples/Python/p-example-2",
+              "description": "List project root directory"
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/setup.py"
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/pyproject.toml"
+            }
+          },
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls /home/robin/Repositories/Samples/Python/p-example-2/binance",
+              "description": "List binance package directory"
+            }
+          },
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/Python/p-example-2/binance/__init__.py"
+            }
+          },
+          {
+            "name": "Bash",
+            "input": {
+              "command": "ls /home/robin/Repositories/Samples/Python/p-example-2/binance/ws",
+              "description": "List ws subpackage"
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "if __name__ == [\\\"']__main__[\\\"']",
+              "output_mode": "files_with_matches"
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "entry_points|console_scripts",
+              "output_mode": "content",
+              "-n": true
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "^def |^async def |^class ",
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2/binance",
+              "output_mode": "content",
+              "-n": true,
+              "head_limit": 100
+            }
+          },
+          {
+            "name": "Grep",
+            "input": {
+              "pattern": "if __name__ == [\\\"']__main__[\\\"']",
+              "output_mode": "content",
+              "-n": true,
+              "path": "/home/robin/Repositories/Samples/Python/p-example-2"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "p-example-2",
+        "question_id": "orient_3",
+        "question": "Context: python project rooted at /home/robin/Repositories/Samples/Python/p-example-2\n\nWhat entry points does this project expose? Look for CLI commands, HTTP routes, public module-level functions, or __main__ blocks.",
+        "answer": "The bindwood code graph database hasn't been built for this project yet\u2014it requires running `bindwood scan` first. Without it, none of the graph tools will work.\n\nCould you either:\n1. Run `bindwood scan` in the project root and let me retry, or\n2. Allow me to use standard file-reading tools (Read/Glob/Grep) instead?\n\nI don't have access to filesystem tools in this session\u2014only the bindwood MCP tools, which all depend on the missing graph database at `/home/robin/Repositories/Samples/Python/p-example-2/graph/code_graph.db`.",
+        "turns": 4,
+        "usage": {
+          "input_tokens": 14,
+          "output_tokens": 72,
+          "cache_creation_input_tokens": 12518,
+          "cache_read_input_tokens": 33946,
+          "total_tokens": 86,
+          "effective_tokens": 19128.1
+        },
+        "result_usage": {
+          "input_tokens": 7,
+          "output_tokens": 413,
+          "cache_creation_input_tokens": 6259,
+          "cache_read_input_tokens": 16973,
+          "total_tokens": 420,
+          "effective_tokens": 9941.0
+        },
+        "total_cost_usd": 0.058437249999999996,
+        "duration_ms": 8029,
+        "elapsed_seconds": 9.65,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    }
+  ],
+  "summary": {
+    "baseline_total_tokens": 893,
+    "bindwood_total_tokens": 220,
+    "baseline_effective_tokens": 108749.6,
+    "bindwood_effective_tokens": 69814.8,
+    "tokens_delta": -673,
+    "effective_tokens_delta": -38934.8,
+    "savings_pct": 75.36,
+    "effective_savings_pct": 35.8,
+    "judge_wins": {},
+    "runs_count": 3,
+    "runs_by_type": {
+      "python": 3
+    }
+  }
+}

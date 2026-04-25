@@ -137,6 +137,8 @@ nav:
       - bindwood.jsts: api/jsts.md
       - bindwood.python: api/python.md
       - bindwood.servers: api/servers.md
+  - Library API: library.md
+  - Benchmark: benchmark.md
   - Troubleshooting: troubleshooting.md
 
 extra:

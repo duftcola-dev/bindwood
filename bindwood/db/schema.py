@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS targets (
 
 CREATE TABLE IF NOT EXISTS nodes (
     id          TEXT NOT NULL,
-    target      TEXT NOT NULL REFERENCES targets(name),
+    target      TEXT NOT NULL REFERENCES targets(name) ON DELETE CASCADE,
     type        TEXT NOT NULL,
     file        TEXT,
     line        INTEGER,
@@ -34,15 +34,15 @@ CREATE TABLE IF NOT EXISTS edges (
     source      TEXT NOT NULL,
     target_node TEXT NOT NULL,
     type        TEXT NOT NULL,
-    target      TEXT NOT NULL REFERENCES targets(name),
+    target      TEXT NOT NULL REFERENCES targets(name) ON DELETE CASCADE,
     properties  TEXT
 );
 
 CREATE TABLE IF NOT EXISTS cross_references (
     source_node   TEXT NOT NULL,
-    source_target TEXT NOT NULL,
+    source_target TEXT NOT NULL REFERENCES targets(name) ON DELETE CASCADE,
     target_node   TEXT NOT NULL,
-    target_target TEXT NOT NULL,
+    target_target TEXT NOT NULL REFERENCES targets(name) ON DELETE CASCADE,
     type          TEXT NOT NULL,
     confidence    REAL DEFAULT 1.0
 );
@@ -70,6 +70,11 @@ def create_database(db_path: Path) -> sqlite3.Connection:
     conn.enable_load_extension(True)
     sqlite_vec.load(conn)
     conn.enable_load_extension(False)
+
+    # Enforce REFERENCES ... ON DELETE CASCADE. This pragma is per-connection
+    # in SQLite; every opener in the codebase must set it or cascades won't
+    # fire. See bindwood.scan._open_existing_db and bindwood.core.connection.
+    conn.execute("PRAGMA foreign_keys = ON")
 
     conn.executescript(SCHEMA_SQL)
 

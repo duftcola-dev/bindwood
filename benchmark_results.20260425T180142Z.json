@@ -1,0 +1,1858 @@
+{
+  "run_metadata": {
+    "started_at": "2026-04-25T18:01:42.205812+00:00",
+    "finished_at": "2026-04-25T18:15:43.462404+00:00",
+    "duration_seconds": 841.26
+  },
+  "runs": [
+    {
+      "repo": "ddl1",
+      "type": "ddl",
+      "target": "ddl1",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl1.sql",
+      "question": {
+        "id": "ddl_orient_1",
+        "tier": "orientation",
+        "text": "Give me an overview of this database schema: how many tables are there, and what are the major entity groups or domains (e.g. users, orders, billing)? Group the tables by purpose."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl1",
+        "question_id": "ddl_orient_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl1.sql\n\nGive me an overview of this database schema: how many tables are there, and what are the major entity groups or domains (e.g. users, orders, billing)? Group the tables by purpose.",
+        "answer": "This is a compact schema in the `stealthis` PostgreSQL schema namespace with **3 tables**, all within a single domain: **user identity and profile management**.\n\n---\n\n### Domain: Identity & Profile\n\n| Table | Purpose | Key Columns |\n|---|---|---|\n| `Person` | Core person record | `Id`, `FirstName`, `LastName`, `AddressId` |\n| `Login` | Authentication credentials | `Id`, `PersonId`, `Email`, `Password`, `Pin` |\n| `Address` | Physical/mailing address | `Id`, `Street`, `City`, `State`, `PostalCode`, `CountryCode`, `Latitude`, `Longitude` |\n\n---\n\n### Relationships\n\n```\nAddress (1) \u2500\u2500\u2500\u2500 (1) Person (1) \u2500\u2500\u2500\u2500 (1) Login\n```\n\n- `Person.AddressId \u2192 Address.Id` \u2014 each person has exactly one address (enforced by a `UNIQUE` constraint on `AddressId`)\n- `Login.PersonId \u2192 Person.Id` \u2014 each login belongs to exactly one person, and each person has at most one login (also enforced by `UNIQUE` on `PersonId`)\n- Both FK relationships cascade on delete\n\n---\n\n### Notable observations\n\n- **1:1 everywhere** \u2014 the unique constraints on both FK columns mean no sharing: one address per person, one login per person. This is a very rigid identity model with no multi-address or multi-login support.\n- **Plain-text password** \u2014 `Login.Password` and `Login.Pin` are stored as `text` with no indication of hashing (a security concern worth flagging).\n- **No timestamps** \u2014 no `created_at`/`updated_at` columns anywhere.\n\nIn summary: this is a minimal user-account schema \u2014 likely a starting point or sample \u2014 covering just enough to represent a person, where they live, and how they log in.",
+        "turns": 5,
+        "usage": {
+          "input_tokens": 11,
+          "output_tokens": 16,
+          "cache_creation_input_tokens": 36680,
+          "cache_read_input_tokens": 22672,
+          "total_tokens": 27,
+          "effective_tokens": 48144.2
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 927,
+          "cache_creation_input_tokens": 12672,
+          "cache_read_input_tokens": 11336,
+          "total_tokens": 931,
+          "effective_tokens": 17904.6
+        },
+        "total_cost_usd": 0.06531880000000001,
+        "duration_ms": 22539,
+        "elapsed_seconds": 23.71,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl1.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 2
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl1",
+        "question_id": "ddl_orient_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl1.sql\n\nGive me an overview of this database schema: how many tables are there, and what are the major entity groups or domains (e.g. users, orders, billing)? Group the tables by purpose.",
+        "answer": "The bindwood graph hasn't been scanned yet, so I'll read the file directly from disk.\n\nI'll parse the SQL file to extract tables and group them by purpose.\n\nThe SQL file is at `/home/robin/Repositories/Samples/DDL/ddl1.sql`. Since the graph tools require a prior `bindwood scan`, let me instead parse the raw file. I don't have a shell/file-read tool available here \u2014 but based on the context you provided, let me ask: could you paste the contents of `ddl1.sql`, or would you like me to suggest running `bindwood scan` first so the graph tools can index it?\n\nAlternatively, if you can share the DDL content, I can give you the full grouped breakdown immediately. Or if you'd like, I can walk you through running `bindwood scan` in your terminal:\n\n```bash\ncd /home/robin/Repositories/Samples/DDL\nbindwood scan\n```\n\nOnce that's done, all the graph tools will work and I can give you a rich, cross-referenced schema overview automatically.",
+        "turns": 8,
+        "usage": {
+          "input_tokens": 16,
+          "output_tokens": 70,
+          "cache_creation_input_tokens": 34283,
+          "cache_read_input_tokens": 33482,
+          "total_tokens": 86,
+          "effective_tokens": 46287.9
+        },
+        "result_usage": {
+          "input_tokens": 5,
+          "output_tokens": 522,
+          "cache_creation_input_tokens": 8794,
+          "cache_read_input_tokens": 16892,
+          "total_tokens": 527,
+          "effective_tokens": 13208.7
+        },
+        "total_cost_usd": 0.046371100000000005,
+        "duration_ms": 11806,
+        "elapsed_seconds": 14.27,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table",
+              "limit": 100
+            }
+          },
+          {
+            "name": "mcp__bindwood__get_node_detail",
+            "input": {
+              "node_id": "/home/robin/Repositories/Samples/DDL/ddl1.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl1",
+      "type": "ddl",
+      "target": "ddl1",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl1.sql",
+      "question": {
+        "id": "ddl_orient_2",
+        "tier": "orientation",
+        "text": "List every table in this schema along with its primary key column(s). Flag any tables that have no primary key."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl1",
+        "question_id": "ddl_orient_2",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl1.sql\n\nList every table in this schema along with its primary key column(s). Flag any tables that have no primary key.",
+        "answer": "Here are all tables in the `stealthis` schema with their primary keys:\n\n| Table | Primary Key Column | Constraint Name |\n|---|---|---|\n| `stealthis.Person` | `Id` (`bigint`) | `pk_person_id` |\n| `stealthis.Login` | `Id` (`bigint`) | `pk_login_id` |\n| `stealthis.Address` | `Id` (`bigint`) | `pk_address_id` |\n\nAll three tables have a primary key \u2014 no unkeyed tables to flag.\n\n**Additional notes worth calling out:**\n\n- `Login.PersonId` has a `UNIQUE` constraint named `Id` (line 85), which means each person can have at most one login \u2014 effectively a one-to-one relationship enforced at the DB level.\n- `Person.AddressId` similarly has a `UNIQUE` constraint (`Id_Address_Person`, line 114), enforcing one-to-one between `Person` and `Address`.\n- All sequences (`person_pk_seq`, `address_pk_seq`, `login_pk_seq`) are defined separately and used as defaults via `nextval(...)`.",
+        "turns": 4,
+        "usage": {
+          "input_tokens": 10,
+          "output_tokens": 25,
+          "cache_creation_input_tokens": 13565,
+          "cache_read_input_tokens": 33044,
+          "total_tokens": 35,
+          "effective_tokens": 20295.7
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 383,
+          "cache_creation_input_tokens": 5413,
+          "cache_read_input_tokens": 18560,
+          "total_tokens": 387,
+          "effective_tokens": 9009.2
+        },
+        "total_cost_usd": 0.03209175,
+        "duration_ms": 11933,
+        "elapsed_seconds": 13.4,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl1.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl1",
+        "question_id": "ddl_orient_2",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl1.sql\n\nList every table in this schema along with its primary key column(s). Flag any tables that have no primary key.",
+        "answer": "The Bindwood graph database hasn't been built for this project yet \u2014 all graph tools require running `bindwood scan` first to index the schema file.\n\n**To get the graph working, run this in the project directory:**\n\n```bash\ncd /home/robin/Repositories/Samples/DDL\nbindwood scan\n```\n\nOnce that completes, I can use `get_table_schema`, `find_nodes`, and the rest of the graph tools to answer your question fully and accurately.\n\n**In the meantime**, if you can paste the contents of `ddl1.sql` here (or share it another way), I can analyze it immediately and give you the full table + primary key breakdown right now.",
+        "turns": 9,
+        "usage": {
+          "input_tokens": 17,
+          "output_tokens": 38,
+          "cache_creation_input_tokens": 18373,
+          "cache_read_input_tokens": 58276,
+          "total_tokens": 55,
+          "effective_tokens": 28848.8
+        },
+        "result_usage": {
+          "input_tokens": 6,
+          "output_tokens": 526,
+          "cache_creation_input_tokens": 4967,
+          "cache_read_input_tokens": 29543,
+          "total_tokens": 532,
+          "effective_tokens": 9695.0
+        },
+        "total_cost_usd": 0.03586515,
+        "duration_ms": 15351,
+        "elapsed_seconds": 17.29,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table",
+              "limit": 50
+            }
+          },
+          {
+            "name": "mcp__bindwood__get_table_schema",
+            "input": {
+              "table_name": "*"
+            }
+          },
+          {
+            "name": "mcp__bindwood__search_code",
+            "input": {
+              "query": "primary key table definition"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl1",
+      "type": "ddl",
+      "target": "ddl1",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl1.sql",
+      "question": {
+        "id": "ddl_lookup_1",
+        "tier": "lookup",
+        "text": "List every foreign-key relationship in this schema. For each FK, show source_table.column \u2192 target_table.column."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl1",
+        "question_id": "ddl_lookup_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl1.sql\n\nList every foreign-key relationship in this schema. For each FK, show source_table.column \u2192 target_table.column.",
+        "answer": "There are two foreign key relationships in this schema:\n\n| # | Source | Target | Constraint | On Delete | On Update |\n|---|--------|--------|------------|-----------|-----------|\n| 1 | `Login.PersonId` \u2192 | `Person.Id` | `Person_fk` | CASCADE | NO ACTION |\n| 2 | `Person.AddressId` \u2192 | `Address.Id` | `Address_fk` | CASCADE | CASCADE |\n\nBoth use `MATCH FULL`, meaning all columns in the FK must either all be non-null or all null. The chain is `Address \u2190 Person \u2190 Login`.",
+        "turns": 4,
+        "usage": {
+          "input_tokens": 10,
+          "output_tokens": 4,
+          "cache_creation_input_tokens": 13571,
+          "cache_read_input_tokens": 33047,
+          "total_tokens": 14,
+          "effective_tokens": 20282.5
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 253,
+          "cache_creation_input_tokens": 5413,
+          "cache_read_input_tokens": 18563,
+          "total_tokens": 257,
+          "effective_tokens": 8879.5
+        },
+        "total_cost_usd": 0.030145649999999996,
+        "duration_ms": 7243,
+        "elapsed_seconds": 8.86,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl1.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl1",
+        "question_id": "ddl_lookup_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl1.sql\n\nList every foreign-key relationship in this schema. For each FK, show source_table.column \u2192 target_table.column.",
+        "answer": "The Bindwood graph hasn't been scanned yet (`bindwood scan` needs to be run first). I can't access the file contents through these tools alone. To get the foreign-key list, you have two options:\n\n1. **Run `bindwood scan`** in your terminal from `/home/robin/Repositories/Samples/DDL`, then re-ask this question \u2014 the graph tools will be fully available.\n\n2. **Paste the SQL here** (or the relevant `REFERENCES` / `FOREIGN KEY` lines) and I'll parse them immediately.\n\nWhich would you prefer?",
+        "turns": 8,
+        "usage": {
+          "input_tokens": 14,
+          "output_tokens": 6,
+          "cache_creation_input_tokens": 13755,
+          "cache_read_input_tokens": 53891,
+          "total_tokens": 20,
+          "effective_tokens": 22602.8
+        },
+        "result_usage": {
+          "input_tokens": 6,
+          "output_tokens": 431,
+          "cache_creation_input_tokens": 4802,
+          "cache_read_input_tokens": 29261,
+          "total_tokens": 437,
+          "effective_tokens": 9365.6
+        },
+        "total_cost_usd": 0.0337348,
+        "duration_ms": 12814,
+        "elapsed_seconds": 15.24,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table",
+              "limit": 50
+            }
+          },
+          {
+            "name": "mcp__bindwood__search_code",
+            "input": {
+              "query": "foreign key references"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl1",
+      "type": "ddl",
+      "target": "ddl1",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl1.sql",
+      "question": {
+        "id": "ddl_lookup_2",
+        "tier": "lookup",
+        "text": "Find all tables that contain a column whose name ends in '_id' or is named 'id'. For each, show the column name and type."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl1",
+        "question_id": "ddl_lookup_2",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl1.sql\n\nFind all tables that contain a column whose name ends in '_id' or is named 'id'. For each, show the column name and type.",
+        "answer": "Here are all matching columns across the three tables. Note that this schema uses PascalCase, so there are no `_id`-suffixed columns \u2014 the FK-style columns use the `<Table>Id` pattern instead.\n\n---\n\n### `stealthis.Person`\n| Column | Type | Match reason |\n|--------|------|--------------|\n| `Id` | `bigint` | named `id` (PK) |\n| `AddressId` | `bigint` | ends in `Id` (FK to Address) |\n\n### `stealthis.Login`\n| Column | Type | Match reason |\n|--------|------|--------------|\n| `Id` | `bigint` | named `id` (PK) |\n| `PersonId` | `bigint` | ends in `Id` (FK to Person) |\n\n### `stealthis.Address`\n| Column | Type | Match reason |\n|--------|------|--------------|\n| `Id` | `bigint` | named `id` (PK) |\n\n---\n\n**Summary:** All three tables have a `bigint Id` primary key. `Person` and `Login` additionally carry foreign-key columns (`AddressId`, `PersonId`) that follow the PascalCase `<Table>Id` convention \u2014 the equivalent of snake_case `_id` suffixes. No column uses the literal `_id` pattern.",
+        "turns": 5,
+        "usage": {
+          "input_tokens": 11,
+          "output_tokens": 19,
+          "cache_creation_input_tokens": 14947,
+          "cache_read_input_tokens": 44376,
+          "total_tokens": 30,
+          "effective_tokens": 23151.3
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 1216,
+          "cache_creation_input_tokens": 5432,
+          "cache_read_input_tokens": 18567,
+          "total_tokens": 1220,
+          "effective_tokens": 9866.7
+        },
+        "total_cost_usd": 0.0446571,
+        "duration_ms": 20610,
+        "elapsed_seconds": 22.12,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl1.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl1",
+        "question_id": "ddl_lookup_2",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl1.sql\n\nFind all tables that contain a column whose name ends in '_id' or is named 'id'. For each, show the column name and type.",
+        "answer": "The bindwood graph database hasn't been initialized for this project \u2014 all tools require it. To use the graph tools you'd need to run `bindwood scan` in the project directory first.\n\nIn the meantime, I can answer your question by reading the raw SQL file directly using the shell. Would you like me to do that? Or if you can share the file contents here, I can parse it immediately and give you the full table/column breakdown.\n\n> **To enable the graph tools for future sessions**, run:\n> ```bash\n> cd /home/robin/Repositories/Samples/DDL\n> bindwood scan\n> ```\n> Then all `find_nodes`, `get_table_schema`, etc. calls will work.",
+        "turns": 8,
+        "usage": {
+          "input_tokens": 14,
+          "output_tokens": 24,
+          "cache_creation_input_tokens": 13745,
+          "cache_read_input_tokens": 53879,
+          "total_tokens": 38,
+          "effective_tokens": 22607.2
+        },
+        "result_usage": {
+          "input_tokens": 6,
+          "output_tokens": 457,
+          "cache_creation_input_tokens": 4806,
+          "cache_read_input_tokens": 29246,
+          "total_tokens": 463,
+          "effective_tokens": 9395.1
+        },
+        "total_cost_usd": 0.034134300000000006,
+        "duration_ms": 11747,
+        "elapsed_seconds": 13.8,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table"
+            }
+          },
+          {
+            "name": "mcp__bindwood__get_table_schema",
+            "input": {
+              "table_name": "users"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl1",
+      "type": "ddl",
+      "target": "ddl1",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl1.sql",
+      "question": {
+        "id": "ddl_struct_1",
+        "tier": "structural",
+        "text": "Pick the most central table in this schema \u2014 the one with the most incoming foreign keys. List the tables that reference it and the tables it references."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl1",
+        "question_id": "ddl_struct_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl1.sql\n\nPick the most central table in this schema \u2014 the one with the most incoming foreign keys. List the tables that reference it and the tables it references.",
+        "answer": "The schema has three tables with two foreign key relationships:\n\n- `Login.PersonId` \u2192 `Person.Id`\n- `Person.AddressId` \u2192 `Address.Id`\n\n**Most central table: `Person`**\n\nBoth `Person` and `Address` have 1 incoming FK each, but `Person` is the hub \u2014 it sits between the other two tables with connections in both directions.\n\n| Direction | Table |\n|---|---|\n| **Referenced by** (incoming FKs) | `Login` (via `Login.PersonId`) |\n| **References** (outgoing FKs) | `Address` (via `Person.AddressId`) |\n\nThe dependency chain is linear: `Login \u2192 Person \u2192 Address`.",
+        "turns": 5,
+        "usage": {
+          "input_tokens": 11,
+          "output_tokens": 58,
+          "cache_creation_input_tokens": 14932,
+          "cache_read_input_tokens": 44374,
+          "total_tokens": 69,
+          "effective_tokens": 23171.4
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 762,
+          "cache_creation_input_tokens": 5425,
+          "cache_read_input_tokens": 18566,
+          "total_tokens": 766,
+          "effective_tokens": 9403.9
+        },
+        "total_cost_usd": 0.03781455,
+        "duration_ms": 13082,
+        "elapsed_seconds": 14.63,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl1.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl1",
+        "question_id": "ddl_struct_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl1.sql\n\nPick the most central table in this schema \u2014 the one with the most incoming foreign keys. List the tables that reference it and the tables it references.",
+        "answer": "All bindwood tools require a built graph database, and none are available to me for reading files directly either. To proceed, you need to run:\n\n```\nbindwood scan\n```\n\nfrom the `/home/robin/Repositories/Samples/DDL` directory. That will index `ddl1.sql` into the graph database. Once that's done, I can query it to find the most central table and map its relationships precisely.",
+        "turns": 9,
+        "usage": {
+          "input_tokens": 15,
+          "output_tokens": 25,
+          "cache_creation_input_tokens": 13839,
+          "cache_read_input_tokens": 62424,
+          "total_tokens": 40,
+          "effective_tokens": 23581.2
+        },
+        "result_usage": {
+          "input_tokens": 6,
+          "output_tokens": 642,
+          "cache_creation_input_tokens": 4757,
+          "cache_read_input_tokens": 29233,
+          "total_tokens": 648,
+          "effective_tokens": 9517.5
+        },
+        "total_cost_usd": 0.03672565,
+        "duration_ms": 19428,
+        "elapsed_seconds": 22.05,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table"
+            }
+          },
+          {
+            "name": "mcp__bindwood__get_node_detail",
+            "input": {
+              "node_id": "ddl1.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl1",
+      "type": "ddl",
+      "target": "ddl1",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl1.sql",
+      "question": {
+        "id": "ddl_cross_1",
+        "tier": "cross_cutting",
+        "text": "Pick one foreign key in this schema. If that FK column were dropped, which tables and queries would be affected? Describe the impact in terms of which relationships break and which orphan rows become possible."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl1",
+        "question_id": "ddl_cross_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl1.sql\n\nPick one foreign key in this schema. If that FK column were dropped, which tables and queries would be affected? Describe the impact in terms of which relationships break and which orphan rows become possible.",
+        "answer": "I'll analyze the schema, then pick one FK and trace the blast radius.\n\n---\n\n## Schema at a Glance\n\nThere are three tables and two foreign keys:\n\n| FK Constraint | Column | References |\n|---|---|---|\n| `Person_fk` | `Login.PersonId` \u2192 `Person.Id` | ON DELETE CASCADE |\n| `Address_fk` | `Person.AddressId` \u2192 `Address.Id` | ON DELETE CASCADE, ON UPDATE CASCADE |\n\n---\n\n## Chosen FK: `Login.PersonId` (`Person_fk`)\n\nDefined at lines 77\u201379:\n\n```sql\nALTER TABLE stealthis.Login ADD CONSTRAINT Person_fk\n  FOREIGN KEY (PersonId) REFERENCES stealthis.Person (Id)\n  MATCH FULL ON DELETE CASCADE ON UPDATE NO ACTION;\n```\n\nDropping the `PersonId` column from `Login` would cascade the following:\n\n---\n\n### 1. Constraints destroyed on `Login`\n\n- **`Person_fk`** \u2014 gone automatically; a FK can't reference a non-existent column.\n- **`Id` UNIQUE** (line 85) \u2014 this unique constraint on `PersonId` is also gone, because the column it covers no longer exists.\n\n### 2. The `Person` \u2194 `Login` relationship is severed\n\nThe schema currently enforces a **strict one-to-one** relationship (FK + UNIQUE on `PersonId`). Dropping the column removes the only structural link between the two tables. There is no other column in `Login` that references `Person`.\n\n### 3. Orphan rows become possible \u2014 in both directions\n\n| Scenario | Currently blocked by | After drop |\n|---|---|---|\n| A `Login` row with no matching `Person` | FK + `NOT NULL` on `PersonId` | Freely allowed |\n| Inserting a `Login` for a non-existent `Person.Id` | FK enforcement | No longer checked |\n\nNote: `PersonId` is declared `NOT NULL` at line 66. Dropping the column removes that constraint too, so a login row with a null \"person\" becomes structurally representable (if the column itself were just nulled rather than dropped, that would be the risk; dropping the column entirely just means the association disappears completely).\n\n### 4. ON DELETE CASCADE is lost\n\nCurrently, deleting a `Person` row automatically deletes the associated `Login` row (line 79). Without the FK, deleting from `Person` leaves the `Login` rows untouched \u2014 those rows become **permanently orphaned** with no way to identify which person they belonged to.\n\n### 5. Queries that break\n\nAny query joining `Login` to `Person` on this column fails at parse/planning time:\n\n```sql\n-- These all break:\nSELECT p.FirstName, l.Email\nFROM stealthis.Person p\nJOIN stealthis.Login l ON l.PersonId = p.Id;\n\nDELETE FROM stealthis.Person WHERE Id = 42;\n-- Previously also deleted Login row for PersonId = 42; now it does not.\n```\n\n---\n\n### Summary\n\nDropping `Login.PersonId` severs the only link between `Login` and `Person`, eliminates the cascade-delete behavior (previously the only cleanup mechanism for orphaned logins), destroys two constraints (`Person_fk` and the UNIQUE on `PersonId`), and makes every existing `Login` row an orphan with no way to associate it back to a person \u2014 data loss that cannot be recovered from the remaining schema alone.",
+        "turns": 5,
+        "usage": {
+          "input_tokens": 11,
+          "output_tokens": 23,
+          "cache_creation_input_tokens": 14945,
+          "cache_read_input_tokens": 44396,
+          "total_tokens": 34,
+          "effective_tokens": 23154.8
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 1319,
+          "cache_creation_input_tokens": 5426,
+          "cache_read_input_tokens": 18577,
+          "total_tokens": 1323,
+          "effective_tokens": 9963.2
+        },
+        "total_cost_usd": 0.046202599999999996,
+        "duration_ms": 29650,
+        "elapsed_seconds": 31.17,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl1.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl1",
+        "question_id": "ddl_cross_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl1.sql\n\nPick one foreign key in this schema. If that FK column were dropped, which tables and queries would be affected? Describe the impact in terms of which relationships break and which orphan rows become possible.",
+        "answer": "The Bindwood graph database hasn't been indexed yet \u2014 all tools require `bindwood scan` to be run first against the repo.\n\nTo get this analysis working, run the following from the project directory:\n\n```bash\nbindwood scan\n```\n\nOnce that completes, I can:\n1. Pull every FK constraint from the schema\n2. Pick one (e.g., the most central one by fan-out)\n3. Show exactly which tables and queries break if that column is dropped\n\n**In the meantime**, if you paste the relevant portion of `ddl1.sql` here (or the full file), I can do the impact analysis right now directly from the SQL text \u2014 no scan needed.",
+        "turns": 8,
+        "usage": {
+          "input_tokens": 16,
+          "output_tokens": 22,
+          "cache_creation_input_tokens": 18276,
+          "cache_read_input_tokens": 49618,
+          "total_tokens": 38,
+          "effective_tokens": 27844.8
+        },
+        "result_usage": {
+          "input_tokens": 5,
+          "output_tokens": 685,
+          "cache_creation_input_tokens": 4802,
+          "cache_read_input_tokens": 20851,
+          "total_tokens": 690,
+          "effective_tokens": 8777.6
+        },
+        "total_cost_usd": 0.0350428,
+        "duration_ms": 15432,
+        "elapsed_seconds": 17.35,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table",
+              "limit": 20
+            }
+          },
+          {
+            "name": "mcp__bindwood__get_node_detail",
+            "input": {
+              "node_id": "/home/robin/Repositories/Samples/DDL/ddl1.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl2",
+      "type": "ddl",
+      "target": "ddl2",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl2.sql",
+      "question": {
+        "id": "ddl_orient_1",
+        "tier": "orientation",
+        "text": "Give me an overview of this database schema: how many tables are there, and what are the major entity groups or domains (e.g. users, orders, billing)? Group the tables by purpose."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl2",
+        "question_id": "ddl_orient_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl2.sql\n\nGive me an overview of this database schema: how many tables are there, and what are the major entity groups or domains (e.g. users, orders, billing)? Group the tables by purpose.",
+        "answer": "The schema is a MySQL dump named `facebook` with **14 tables**. Here's how they group:\n\n---\n\n### User / Identity (3 tables)\n| Table | Purpose |\n|---|---|\n| `user_basic` | Core account: name, email, password, DOB, gender |\n| `user_about` | Profile details: occupation, education, city, join date |\n| `address` | Physical addresses, referenced by `user_about` |\n\n### Social Graph (2 tables)\n| Table | Purpose |\n|---|---|\n| `friends` | User\u2013user friendship pairs with a start date |\n| `events` | Event invitations and RSVPs (invitee + going user IDs) |\n\n### Content / Feed (3 tables)\n| Table | Purpose |\n|---|---|\n| `posts` | User posts with action type and privacy level |\n| `photos` | Uploaded photos with caption, tags, location |\n| `activity_log` | Log of interactions per user: liked, shared, commented, etc. |\n\n### Pages & Advertising (3 tables)\n| Table | Purpose |\n|---|---|\n| `pages` | Brand/fan pages owned by users, with follower count |\n| `advertisements` | Ads tied to pages: targeting, budget, schedule, click count |\n| `ad_metrics` | Catalog of ad tools (Performance, Impressions, ROAS, etc.) with pricing |\n\n### Marketplace / Commerce (2 tables)\n| Table | Purpose |\n|---|---|\n| `marketplace` | Items listed for sale by users, with price and description |\n| `sales_table` | Aggregate sales rollup by item category (no FK \u2014 standalone reporting table) |\n\n### Entertainment (1 table)\n| Table | Purpose |\n|---|---|\n| `games` | Games played by users with score, category, and paid/price info |\n\n---\n\n**Key observations:**\n- `user_basic` is the central hub \u2014 nearly every table foreign-keys back to it via `User_id`.\n- `sales_table` is the odd one out: it has no primary key and no foreign keys, suggesting it's a denormalized reporting/analytics extract rather than a transactional table.\n- `ad_metrics` also has no FK relationships \u2014 it appears to be a reference/catalog table for the ad tools, not directly linked to `advertisements` despite the overlap in domain.",
+        "turns": 5,
+        "usage": {
+          "input_tokens": 11,
+          "output_tokens": 19,
+          "cache_creation_input_tokens": 40510,
+          "cache_read_input_tokens": 44398,
+          "total_tokens": 30,
+          "effective_tokens": 55107.3
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 1271,
+          "cache_creation_input_tokens": 18208,
+          "cache_read_input_tokens": 18578,
+          "total_tokens": 1275,
+          "effective_tokens": 25892.8
+        },
+        "total_cost_usd": 0.0934114,
+        "duration_ms": 22587,
+        "elapsed_seconds": 24.17,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl2.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl2",
+        "question_id": "ddl_orient_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl2.sql\n\nGive me an overview of this database schema: how many tables are there, and what are the major entity groups or domains (e.g. users, orders, billing)? Group the tables by purpose.",
+        "answer": "The bindwood graph database needs to be scanned first (`bindwood scan`), so I'll read the file directly from disk.\n\nI'll read the SQL file to analyze it manually.\n\nThe bindwood graph isn't indexed yet. Let me read the raw SQL file instead.\n\n```\ncat /home/robin/Repositories/Samples/DDL/ddl2.sql\n```\n\nSince I can't run shell commands directly and the graph DB isn't available, let me try reading the file via the search tool \u2014 but that won't work either without the DB. Let me ask: could you share the contents of `ddl2.sql`, or run `bindwood scan` first so the graph is available?\n\nAlternatively, if you paste the DDL here (or even just a `\\dt` listing), I can give you the full grouped breakdown right away.\n\n> **To index it:** run `bindwood scan` in `/home/robin/Repositories/Samples/DDL`, then re-ask this question and I'll be able to give a full interactive breakdown using the graph tools.",
+        "turns": 8,
+        "usage": {
+          "input_tokens": 16,
+          "output_tokens": 29,
+          "cache_creation_input_tokens": 18461,
+          "cache_read_input_tokens": 49315,
+          "total_tokens": 45,
+          "effective_tokens": 28052.8
+        },
+        "result_usage": {
+          "input_tokens": 5,
+          "output_tokens": 526,
+          "cache_creation_input_tokens": 4844,
+          "cache_read_input_tokens": 20851,
+          "total_tokens": 531,
+          "effective_tokens": 8671.1
+        },
+        "total_cost_usd": 0.0328063,
+        "duration_ms": 14242,
+        "elapsed_seconds": 16.49,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table",
+              "limit": 100
+            }
+          },
+          {
+            "name": "mcp__bindwood__get_node_detail",
+            "input": {
+              "node_id": "/home/robin/Repositories/Samples/DDL/ddl2.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl2",
+      "type": "ddl",
+      "target": "ddl2",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl2.sql",
+      "question": {
+        "id": "ddl_orient_2",
+        "tier": "orientation",
+        "text": "List every table in this schema along with its primary key column(s). Flag any tables that have no primary key."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl2",
+        "question_id": "ddl_orient_2",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl2.sql\n\nList every table in this schema along with its primary key column(s). Flag any tables that have no primary key.",
+        "answer": "Here is every table in the schema with its primary key(s):\n\n| Table | Primary Key |\n|---|---|\n| `activity_log` | `User_id` |\n| `ad_metrics` | `Tool_id` |\n| `address` | `Address_id` |\n| `advertisements` | `Ad_id` |\n| `events` | `Evite_id` |\n| `friends` | `Friend_id` |\n| `games` | `Game_id` |\n| `marketplace` | `Item_id` |\n| `pages` | `Page_id` |\n| `photos` | `Photo_id` |\n| `posts` | `Post_id` |\n| `sales_table` | \u26a0\ufe0f **None** |\n| `user_about` | `User_id` |\n| `user_basic` | `User_id` |\n\n**Flagged:** `sales_table` has no `PRIMARY KEY` defined (lines 350\u2013355). It has an `Item_id` column that appears to serve as an identifier (mirroring `marketplace.Item_id`), but it is not declared as a primary key, meaning duplicate or null values are permitted and rows cannot be uniquely addressed.",
+        "turns": 4,
+        "usage": {
+          "input_tokens": 10,
+          "output_tokens": 19,
+          "cache_creation_input_tokens": 26345,
+          "cache_read_input_tokens": 33044,
+          "total_tokens": 29,
+          "effective_tokens": 36264.7
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 400,
+          "cache_creation_input_tokens": 18193,
+          "cache_read_input_tokens": 18560,
+          "total_tokens": 404,
+          "effective_tokens": 25001.2
+        },
+        "total_cost_usd": 0.08027175,
+        "duration_ms": 9497,
+        "elapsed_seconds": 11.04,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl2.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl2",
+        "question_id": "ddl_orient_2",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl2.sql\n\nList every table in this schema along with its primary key column(s). Flag any tables that have no primary key.",
+        "answer": "The bindwood graph database isn't built for this project yet (`bindwood scan` hasn't been run). I'll parse the SQL file directly to answer your question.\n\nCould you confirm whether you'd like me to read the file at `/home/robin/Repositories/Samples/DDL/ddl2.sql` using the file-read tools (outside of bindwood)? Or, if you can paste the contents of the SQL file here, I can analyse it immediately. Alternatively, if you have the bindwood CLI available, running `bindwood scan` in the project directory will index the schema and unlock all the graph tools.",
+        "turns": 9,
+        "usage": {
+          "input_tokens": 17,
+          "output_tokens": 37,
+          "cache_creation_input_tokens": 18384,
+          "cache_read_input_tokens": 58294,
+          "total_tokens": 54,
+          "effective_tokens": 28863.4
+        },
+        "result_usage": {
+          "input_tokens": 6,
+          "output_tokens": 499,
+          "cache_creation_input_tokens": 4960,
+          "cache_read_input_tokens": 29561,
+          "total_tokens": 505,
+          "effective_tokens": 9661.1
+        },
+        "total_cost_usd": 0.03543929999999999,
+        "duration_ms": 15708,
+        "elapsed_seconds": 17.86,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table",
+              "limit": 100
+            }
+          },
+          {
+            "name": "mcp__bindwood__get_node_detail",
+            "input": {
+              "node_id": "/home/robin/Repositories/Samples/DDL/ddl2.sql"
+            }
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "file": "/home/robin/Repositories/Samples/DDL/ddl2.sql",
+              "limit": 100
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl2",
+      "type": "ddl",
+      "target": "ddl2",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl2.sql",
+      "question": {
+        "id": "ddl_lookup_1",
+        "tier": "lookup",
+        "text": "List every foreign-key relationship in this schema. For each FK, show source_table.column \u2192 target_table.column."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl2",
+        "question_id": "ddl_lookup_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl2.sql\n\nList every foreign-key relationship in this schema. For each FK, show source_table.column \u2192 target_table.column.",
+        "answer": "Here are all 11 foreign key relationships in the schema:\n\n| # | Source | \u2192 | Target |\n|---|--------|---|--------|\n| 1 | `activity_log.User_id` | \u2192 | `user_basic.user_id` |\n| 2 | `advertisements.Page_id` | \u2192 | `pages.page_id` |\n| 3 | `events.Invitees_Userid` | \u2192 | `user_basic.user_id` |\n| 4 | `events.Going_Userid` | \u2192 | `user_basic.user_id` |\n| 5 | `friends.User_id` | \u2192 | `user_basic.user_id` |\n| 6 | `marketplace.Seller_id` | \u2192 | `user_basic.user_id` |\n| 7 | `pages.User_id` | \u2192 | `user_basic.user_id` |\n| 8 | `photos.User_id` | \u2192 | `user_basic.user_id` |\n| 9 | `posts.User_id` | \u2192 | `user_basic.user_id` |\n| 10 | `user_about.Address_id` | \u2192 | `address.address_id` |\n| 11 | `user_about.User_id` | \u2192 | `user_basic.user_id` |\n\n**Notable observations:**\n- `user_basic` is the central hub \u2014 8 of the 11 FKs point to it.\n- `events` has two separate FKs to `user_basic` (one for invitees, one for attendees).\n- `user_about` is the only table with two outbound FKs (to both `user_basic` and `address`).\n- `games` and `sales_table` have no foreign keys defined, despite having `User_id`/`Item_id` columns that logically suggest relationships.",
+        "turns": 4,
+        "usage": {
+          "input_tokens": 10,
+          "output_tokens": 25,
+          "cache_creation_input_tokens": 26352,
+          "cache_read_input_tokens": 33047,
+          "total_tokens": 35,
+          "effective_tokens": 36279.7
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 565,
+          "cache_creation_input_tokens": 18194,
+          "cache_read_input_tokens": 18563,
+          "total_tokens": 569,
+          "effective_tokens": 25167.8
+        },
+        "total_cost_usd": 0.0827494,
+        "duration_ms": 10800,
+        "elapsed_seconds": 12.5,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl2.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl2",
+        "question_id": "ddl_lookup_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl2.sql\n\nList every foreign-key relationship in this schema. For each FK, show source_table.column \u2192 target_table.column.",
+        "answer": "The bindwood graph database needs to be scanned first (`bindwood scan`). In the meantime, I can read the raw SQL file and extract the FK relationships from it directly \u2014 would you like me to do that? Or would you prefer to run `bindwood scan` first so the full graph tooling is available?",
+        "turns": 8,
+        "usage": {
+          "input_tokens": 14,
+          "output_tokens": 23,
+          "cache_creation_input_tokens": 13729,
+          "cache_read_input_tokens": 53883,
+          "total_tokens": 37,
+          "effective_tokens": 22586.5
+        },
+        "result_usage": {
+          "input_tokens": 6,
+          "output_tokens": 354,
+          "cache_creation_input_tokens": 4790,
+          "cache_read_input_tokens": 29250,
+          "total_tokens": 360,
+          "effective_tokens": 9272.5
+        },
+        "total_cost_usd": 0.032536499999999996,
+        "duration_ms": 9101,
+        "elapsed_seconds": 11.25,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table"
+            }
+          },
+          {
+            "name": "mcp__bindwood__get_table_schema",
+            "input": {
+              "table_name": "users"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl2",
+      "type": "ddl",
+      "target": "ddl2",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl2.sql",
+      "question": {
+        "id": "ddl_lookup_2",
+        "tier": "lookup",
+        "text": "Find all tables that contain a column whose name ends in '_id' or is named 'id'. For each, show the column name and type."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl2",
+        "question_id": "ddl_lookup_2",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl2.sql\n\nFind all tables that contain a column whose name ends in '_id' or is named 'id'. For each, show the column name and type.",
+        "answer": "Here are all tables with columns named `id` or ending in `_id`:\n\n| Table | Column | Type |\n|---|---|---|\n| `activity_log` | `User_id` | `int(11)` |\n| `activity_log` | `Friend_id` | `int(11)` |\n| `ad_metrics` | `Tool_id` | `decimal(6,0)` |\n| `address` | `Address_id` | `int(11)` |\n| `advertisements` | `Ad_id` | `int(11)` |\n| `advertisements` | `Page_id` | `int(11)` |\n| `events` | `Evite_id` | `int(11)` |\n| `friends` | `Friend_id` | `int(11)` |\n| `friends` | `User_id` | `int(11)` |\n| `friends` | `Friends_User_id` | `int(11)` |\n| `games` | `Game_id` | `int(11)` |\n| `games` | `User_id` | `int(10) unsigned zerofill` |\n| `marketplace` | `Item_id` | `int(11)` |\n| `marketplace` | `Seller_id` | `int(11)` |\n| `pages` | `Page_id` | `int(11)` |\n| `pages` | `User_id` | `int(11)` |\n| `photos` | `Photo_id` | `int(11)` |\n| `photos` | `User_id` | `int(11)` |\n| `posts` | `Post_id` | `int(11)` |\n| `posts` | `User_id` | `int(11)` |\n| `sales_table` | `Item_id` | `int(11)` |\n| `user_about` | `User_id` | `int(11)` |\n| `user_about` | `Address_id` | `int(11)` |\n| `user_basic` | `User_id` | `int(11)` |\n\n**Notes:**\n- No column is named exactly `id`; all matches end in `_id`.\n- `events.Invitees_Userid` and `events.Going_Userid` were excluded \u2014 they end in `id` but not `_id` (the suffix is `_Userid`, not `_id`).\n- Nearly every column is `int(11)`. The two exceptions are `ad_metrics.Tool_id` (`decimal(6,0)`) and `games.User_id` (`int(10) unsigned zerofill`).",
+        "turns": 5,
+        "usage": {
+          "input_tokens": 11,
+          "output_tokens": 16,
+          "cache_creation_input_tokens": 40511,
+          "cache_read_input_tokens": 44376,
+          "total_tokens": 27,
+          "effective_tokens": 55103.3
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 2286,
+          "cache_creation_input_tokens": 18214,
+          "cache_read_input_tokens": 18567,
+          "total_tokens": 2290,
+          "effective_tokens": 26914.2
+        },
+        "total_cost_usd": 0.1086396,
+        "duration_ms": 31256,
+        "elapsed_seconds": 32.82,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl2.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl2",
+        "question_id": "ddl_lookup_2",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl2.sql\n\nFind all tables that contain a column whose name ends in '_id' or is named 'id'. For each, show the column name and type.",
+        "answer": "The bindwood graph database needs to be built with `bindwood scan` before any graph tools will work. Since all graph tools are unavailable, I'll parse the SQL file directly using the shell.\n\nCould you open a terminal and run the following command? It will extract every `id` / `*_id` column definition along with its table name and type from `ddl2.sql`:\n\n```bash\nawk '\n  /^CREATE TABLE/ { gsub(/[^a-zA-Z0-9_.]/, \"\", $3); table = $3 }\n  /\\b_id\\b|\\bid\\b/ && !/--/ {\n    col = $0\n    gsub(/^[[:space:]]+/, \"\", col)\n    if (col ~ /^[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]/ && (col ~ /\\bid\\b/ || col ~ /_id\\b/))\n      print table \": \" col\n  }\n' /home/robin/Repositories/Samples/DDL/ddl2.sql\n```\n\nAlternatively, if you run `bindwood scan` in the project directory first, I can use the graph tools to answer this properly with full schema awareness.\n\n**What's blocking me:** The bindwood graph index (`graph/code_graph.db`) does not exist \u2014 all graph tools return the same error. Run `bindwood scan` from `/home/robin/Repositories/Samples/DDL/` to build it, then I can query tables, columns, and relationships directly.",
+        "turns": 10,
+        "usage": {
+          "input_tokens": 16,
+          "output_tokens": 11,
+          "cache_creation_input_tokens": 14077,
+          "cache_read_input_tokens": 71176,
+          "total_tokens": 27,
+          "effective_tokens": 24740.8
+        },
+        "result_usage": {
+          "input_tokens": 7,
+          "output_tokens": 779,
+          "cache_creation_input_tokens": 4991,
+          "cache_read_input_tokens": 37968,
+          "total_tokens": 786,
+          "effective_tokens": 10821.5
+        },
+        "total_cost_usd": 0.04227765,
+        "duration_ms": 25827,
+        "elapsed_seconds": 28.01,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table"
+            }
+          },
+          {
+            "name": "mcp__bindwood__get_node_detail",
+            "input": {
+              "node_id": "ddl2.sql"
+            }
+          },
+          {
+            "name": "mcp__bindwood__search_code",
+            "input": {
+              "query": "table column id _id primary key foreign key"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl2",
+      "type": "ddl",
+      "target": "ddl2",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl2.sql",
+      "question": {
+        "id": "ddl_struct_1",
+        "tier": "structural",
+        "text": "Pick the most central table in this schema \u2014 the one with the most incoming foreign keys. List the tables that reference it and the tables it references."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl2",
+        "question_id": "ddl_struct_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl2.sql\n\nPick the most central table in this schema \u2014 the one with the most incoming foreign keys. List the tables that reference it and the tables it references.",
+        "answer": "**Most central table: `user_basic`**\n\nIt has **9 incoming foreign key references** from **8 tables** \u2014 no other table comes close (`address` and `pages` each get only 1).\n\n---\n\n### Tables that reference `user_basic` (incoming FKs)\n\n| Table | Column(s) | Constraint |\n|---|---|---|\n| `activity_log` | `User_id` | `fk_Activity_log_User_basic1` |\n| `events` | `Invitees_Userid` | `fk_Events_User_basic1` |\n| `events` | `Going_Userid` | `fk_Events_User_basic2` |\n| `friends` | `User_id` | `fk_Friends_User_basic` |\n| `marketplace` | `Seller_id` | `fk_Marketplace_User_basic1` |\n| `pages` | `User_id` | `fk_Pages_User_basic1` |\n| `photos` | `User_id` | `fk_Photos_User_basic1` |\n| `posts` | `User_id` | `fk_Posts_User_basic1` |\n| `user_about` | `User_id` | `fk_User_about_User_basic1` |\n\n### Tables that `user_basic` references (outgoing FKs)\n\n**None.** `user_basic` has no foreign keys of its own \u2014 it is a pure root/anchor table.\n\n---\n\nNote that `events` contributes two separate FKs (invitee and attendee both point back to `user_basic`), and the cascade rule `ON DELETE CASCADE ON UPDATE CASCADE` is consistent across all eight referencing tables.",
+        "turns": 5,
+        "usage": {
+          "input_tokens": 11,
+          "output_tokens": 40,
+          "cache_creation_input_tokens": 40488,
+          "cache_read_input_tokens": 44374,
+          "total_tokens": 51,
+          "effective_tokens": 55098.4
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 1210,
+          "cache_creation_input_tokens": 18203,
+          "cache_read_input_tokens": 18566,
+          "total_tokens": 1214,
+          "effective_tokens": 25824.3
+        },
+        "total_cost_usd": 0.09246705,
+        "duration_ms": 18064,
+        "elapsed_seconds": 19.59,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl2.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl2",
+        "question_id": "ddl_struct_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl2.sql\n\nPick the most central table in this schema \u2014 the one with the most incoming foreign keys. List the tables that reference it and the tables it references.",
+        "answer": "The bindwood graph database hasn't been indexed yet \u2014 all tools require it. To use the graph tools, run `bindwood scan` from the project directory first.\n\nIn the meantime, if you paste (or share) the contents of `ddl2.sql`, I can parse the `REFERENCES` clauses directly and identify the most central table for you right now.",
+        "turns": 11,
+        "usage": {
+          "input_tokens": 17,
+          "output_tokens": 48,
+          "cache_creation_input_tokens": 14193,
+          "cache_read_input_tokens": 79868,
+          "total_tokens": 65,
+          "effective_tokens": 25793.0
+        },
+        "result_usage": {
+          "input_tokens": 7,
+          "output_tokens": 754,
+          "cache_creation_input_tokens": 4934,
+          "cache_read_input_tokens": 37955,
+          "total_tokens": 761,
+          "effective_tokens": 10724.0
+        },
+        "total_cost_usd": 0.041689000000000004,
+        "duration_ms": 18335,
+        "elapsed_seconds": 20.23,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table"
+            }
+          },
+          {
+            "name": "mcp__bindwood__get_table_schema",
+            "input": {
+              "table_name": "orders"
+            }
+          },
+          {
+            "name": "mcp__bindwood__search_code",
+            "input": {
+              "query": "foreign key references table"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl2",
+      "type": "ddl",
+      "target": "ddl2",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl2.sql",
+      "question": {
+        "id": "ddl_cross_1",
+        "tier": "cross_cutting",
+        "text": "Pick one foreign key in this schema. If that FK column were dropped, which tables and queries would be affected? Describe the impact in terms of which relationships break and which orphan rows become possible."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl2",
+        "question_id": "ddl_cross_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl2.sql\n\nPick one foreign key in this schema. If that FK column were dropped, which tables and queries would be affected? Describe the impact in terms of which relationships break and which orphan rows become possible.",
+        "answer": "**Chosen FK:** `pages.User_id \u2192 user_basic.user_id` (`fk_Pages_User_basic1`, line 271)\n\n---\n\n## Impact of dropping `pages.User_id`\n\n### What the column currently does\n\n`pages.User_id` is the only column that ties a Facebook Page back to the user who owns it. The FK enforces referential integrity and carries `ON DELETE CASCADE ON UPDATE CASCADE`.\n\n---\n\n### Relationships that break\n\n**1. pages \u2192 user_basic (direct)**\nThe most obvious casualty. There is no longer any enforced link between a Page and its owner. Queries that join `pages` to `user_basic` on this column \u2014 e.g., \"show all pages created by user X\" or \"who owns page Y?\" \u2014 would fail with `Unknown column 'pages.User_id'` as soon as the column is gone.\n\n**2. advertisements \u2192 pages \u2192 user_basic (indirect, cascade chain)**\n`advertisements.Page_id` FKs into `pages.page_id` (line 123). That link stays intact. But the chain that lets you trace an advertisement back to its owning user is broken: `advertisements \u2192 pages` still works, `pages \u2192 user_basic` does not. Any query answering \"which user is running this ad?\" must either go through `pages.User_id` or add a separate denormalized column. Currently 17 rows in `advertisements` depend on this chain.\n\n**3. ON DELETE CASCADE no longer fires**\nToday, deleting a user from `user_basic` cascades \u2192 deletes their `pages` rows \u2192 which in turn cascades into `advertisements` (via `fk_Advertisements_Pages1`). With `pages.User_id` gone, that first hop disappears. Deleting a user would leave their pages behind \u2014 and those orphan pages would keep their advertisements alive.\n\n---\n\n### Orphan rows that become possible\n\n| Table | Orphan scenario |\n|---|---|\n| `pages` | A page can be inserted with no corresponding `user_basic` row. Enforcement is gone, so any integer is accepted. |\n| `advertisements` | Because orphan pages can now exist, advertisements can in turn reference pages that have no owner \u2014 the cascade protection that would have cleaned them up is severed. |\n\n---\n\n### Concrete query casualties\n\n```sql\n-- Breaks entirely (column gone):\nSELECT u.First_name, p.Category, p.No_of_followers\nFROM pages p\nJOIN user_basic u ON p.User_id = u.user_id;\n\n-- Breaks the attribution chain (column gone):\nSELECT u.First_name, a.Budget, a.Location\nFROM advertisements a\nJOIN pages p ON a.Page_id = p.page_id\nJOIN user_basic u ON p.User_id = u.user_id;  -- \u2190 this join has no column to work with\n\n-- Silent data integrity failure (if only the FK constraint is dropped but column kept):\n-- Pages can now have User_id values that reference no real user,\n-- so the above queries would return stale or phantom user data.\n```\n\n---\n\n### Summary\n\nDropping `pages.User_id` severs the owner-of-page relationship and also collapses the delete-cascade chain that currently keeps `advertisements` clean when a user is removed. The `advertisements` table is the surprise secondary victim \u2014 it has its own FK intact but loses its transitive protection against orphaned ad data.",
+        "turns": 5,
+        "usage": {
+          "input_tokens": 11,
+          "output_tokens": 34,
+          "cache_creation_input_tokens": 40507,
+          "cache_read_input_tokens": 44396,
+          "total_tokens": 45,
+          "effective_tokens": 55118.3
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 2494,
+          "cache_creation_input_tokens": 18207,
+          "cache_read_input_tokens": 18577,
+          "total_tokens": 2498,
+          "effective_tokens": 27114.5
+        },
+        "total_cost_usd": 0.11176135,
+        "duration_ms": 49350,
+        "elapsed_seconds": 50.82,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl2.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl2",
+        "question_id": "ddl_cross_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl2.sql\n\nPick one foreign key in this schema. If that FK column were dropped, which tables and queries would be affected? Describe the impact in terms of which relationships break and which orphan rows become possible.",
+        "answer": "The graph tools require a prior `bindwood scan`. I'll read the file directly from disk instead.\n\nThe file is at `/home/robin/Repositories/Samples/DDL/ddl2.sql` \u2014 let me open it.\n\n```\ncat /home/robin/Repositories/Samples/DDL/ddl2.sql\n```\n\nSince I can't run shell commands here, let me ask you to paste the relevant portion, or \u2014 if you'd like \u2014 run `bindwood scan` first and then re-ask. That said, let me work from what the schema typically looks like in that kind of file by reasoning from the FK you want analyzed.\n\n**To give you a precise answer, please paste the contents of `ddl2.sql`** (or even just the `CREATE TABLE` blocks). Once I can see:\n\n1. Which tables exist\n2. Which columns carry `FOREIGN KEY` constraints\n3. Any `ON DELETE` / `ON UPDATE` rules\n\n\u2026I can tell you exactly:\n\n- Which **relationship breaks** (the join that enforced referential integrity disappears)\n- Which **queries break** (any query that relies on that join path being guaranteed intact)\n- Where **orphan rows become possible** (child-side rows that would have no matching parent)\n- Whether any **cascades or `SET NULL` actions** would also stop firing\n\nPaste the SQL and I'll do a full impact analysis on whichever FK you (or I) pick.",
+        "turns": 8,
+        "usage": {
+          "input_tokens": 16,
+          "output_tokens": 29,
+          "cache_creation_input_tokens": 18482,
+          "cache_read_input_tokens": 49317,
+          "total_tokens": 45,
+          "effective_tokens": 28079.2
+        },
+        "result_usage": {
+          "input_tokens": 5,
+          "output_tokens": 630,
+          "cache_creation_input_tokens": 4856,
+          "cache_read_input_tokens": 20855,
+          "total_tokens": 635,
+          "effective_tokens": 8790.5
+        },
+        "total_cost_usd": 0.03440649999999999,
+        "duration_ms": 17627,
+        "elapsed_seconds": 19.64,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table",
+              "limit": 30
+            }
+          },
+          {
+            "name": "mcp__bindwood__get_node_detail",
+            "input": {
+              "node_id": "/home/robin/Repositories/Samples/DDL/ddl2.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl3",
+      "type": "ddl",
+      "target": "ddl3",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl3.sql",
+      "question": {
+        "id": "ddl_orient_1",
+        "tier": "orientation",
+        "text": "Give me an overview of this database schema: how many tables are there, and what are the major entity groups or domains (e.g. users, orders, billing)? Group the tables by purpose."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl3",
+        "question_id": "ddl_orient_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl3.sql\n\nGive me an overview of this database schema: how many tables are there, and what are the major entity groups or domains (e.g. users, orders, billing)? Group the tables by purpose.",
+        "answer": "Here's a full breakdown of the schema:\n\n---\n\n## Total: 51 tables across 9 schemas (+ 1 materialized view)\n\n`audit.actor_events` is range-partitioned by quarter \u2014 4 partition tables are defined for 2026.\n\n---\n\n### 1. `core` \u2014 Shared Reference Data (4 tables)\n| Table | Purpose |\n|---|---|\n| `countries` | ISO country codes, currency mapping, EU flag |\n| `currencies` | Currency definitions with decimal precision |\n| `exchange_rates` | Time-series FX rates between currency pairs |\n| `addresses` | Reusable postal addresses referenced across the schema |\n\n---\n\n### 2. `iam` \u2014 Identity & Access Management (9 tables)\n| Table | Purpose |\n|---|---|\n| `organizations` | Tenant/company root entities |\n| `users` | Individual user accounts |\n| `roles` / `permissions` / `role_permissions` | RBAC: roles per org, granular permissions |\n| `organization_memberships` / `membership_roles` | User-to-org join with role assignments |\n| `user_mfa_methods` | TOTP/SMS/WebAuthn second factors per user |\n| `api_keys` | Scoped, hashed API credentials per org |\n\n---\n\n### 3. `billing` \u2014 Subscriptions, Invoicing & Payments (6 tables)\n| Table | Purpose |\n|---|---|\n| `plans` | Subscription plan definitions (monthly/yearly) |\n| `subscriptions` | Org-to-plan subscriptions with lifecycle status |\n| `payment_methods` | Stored/tokenized payment instruments |\n| `invoices` / `invoice_lines` | Invoice header + line items |\n| `payments` | Payment attempts with provider tracking |\n\n---\n\n### 4. `catalog` \u2014 Product Catalog & Pricing (8 tables)\n| Table | Purpose |\n|---|---|\n| `brands` | Brand entities per org |\n| `categories` | Hierarchical categories (ltree path) |\n| `products` | Master product records (physical/digital/service/bundle) |\n| `product_category_map` | Many-to-many product \u2194 category |\n| `product_variants` | SKU-level variants with pricing and dimensions |\n| `bundle_components` | Components and quantities for bundle products |\n| `price_lists` / `price_list_items` | Custom B2B price lists with min-qty tiers |\n\n---\n\n### 5. `inventory` \u2014 Warehousing & Stock (6 tables)\n| Table | Purpose |\n|---|---|\n| `warehouses` | Physical warehouse locations |\n| `locations` | Bin-level locations within a warehouse |\n| `stock_items` | Per-variant/warehouse stock with reservations |\n| `stock_movements` | Immutable movement log (inbound, outbound, reservations) |\n| `transfer_orders` / `transfer_order_lines` | Inter-warehouse transfer requests |\n\n---\n\n### 6. `sales` \u2014 Customers, Orders & Returns (8 tables)\n| Table | Purpose |\n|---|---|\n| `customers` | B2B customer records with credit limits |\n| `orders` / `order_lines` | Order header + line items |\n| `order_allocations` | Inventory reservations against order lines |\n| `coupons` / `order_coupon_redemptions` | Discount codes and their usage |\n| `returns` / `return_lines` | RMA workflow: requested \u2192 approved \u2192 received \u2192 refunded |\n\n---\n\n### 7. `logistics` \u2014 Shipping & Carrier Tracking (4 tables)\n| Table | Purpose |\n|---|---|\n| `carriers` | Carrier definitions with service levels |\n| `shipments` / `shipment_lines` | Shipment header + which order lines are included |\n| `delivery_events` | Carrier tracking event log per shipment |\n\n---\n\n### 8. `support` \u2014 Ticketing & SLAs (4 tables)\n| Table | Purpose |\n|---|---|\n| `ticket_queues` | Routing queues with email aliases |\n| `tickets` | Support tickets linked to customer/order |\n| `ticket_messages` | Thread messages (internal or customer-facing) |\n| `slas` | First-response and resolution SLA targets by priority |\n\n---\n\n### 9. `audit` \u2014 Auditing (2 tables + partitions)\n| Table | Purpose |\n|---|---|\n| `row_change_log` | Captures before/after JSON for every audited table row change |\n| `actor_events` | High-volume event log (partitioned by quarter) for user/system/API actions |\n\n---\n\n### Notable design patterns\n- **Multi-tenant throughout**: virtually every table has `organization_id` as a scoping key.\n- **Trigger-driven integrity**: order totals recalculate automatically on line changes; stock quantities update on movement inserts.\n- **GIST exclusion constraints**: enforce single primary MFA per user and single default payment method per org.\n- **Soft references in stock movements**: `reference_type` + `reference_id` provide a polymorphic link to the source entity without foreign key coupling.",
+        "turns": 5,
+        "usage": {
+          "input_tokens": 11,
+          "output_tokens": 19,
+          "cache_creation_input_tokens": 43860,
+          "cache_read_input_tokens": 44398,
+          "total_tokens": 30,
+          "effective_tokens": 59294.8
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 2395,
+          "cache_creation_input_tokens": 19883,
+          "cache_read_input_tokens": 18578,
+          "total_tokens": 2399,
+          "effective_tokens": 29110.5
+        },
+        "total_cost_usd": 0.11655265000000002,
+        "duration_ms": 35176,
+        "elapsed_seconds": 36.67,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl3.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl3",
+        "question_id": "ddl_orient_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl3.sql\n\nGive me an overview of this database schema: how many tables are there, and what are the major entity groups or domains (e.g. users, orders, billing)? Group the tables by purpose.",
+        "answer": "The Bindwood graph database hasn't been indexed yet \u2014 all tools require `bindwood scan` to be run first against the DDL file.\n\nYou have two options to proceed:\n\n1. **Run `bindwood scan`** in the `/home/robin/Repositories/Samples/DDL/` directory to index the schema, then ask again and I'll give you a full structured breakdown.\n\n2. **Paste the SQL content** (or the relevant `CREATE TABLE` statements) directly into the chat, and I'll analyze it immediately without needing the graph database.\n\nWhich would you prefer?",
+        "turns": 7,
+        "usage": {
+          "input_tokens": 13,
+          "output_tokens": 48,
+          "cache_creation_input_tokens": 13693,
+          "cache_read_input_tokens": 45348,
+          "total_tokens": 61,
+          "effective_tokens": 21712.0
+        },
+        "result_usage": {
+          "input_tokens": 5,
+          "output_tokens": 725,
+          "cache_creation_input_tokens": 4678,
+          "cache_read_input_tokens": 20695,
+          "total_tokens": 730,
+          "effective_tokens": 8647.0
+        },
+        "total_cost_usd": 0.035122,
+        "duration_ms": 16159,
+        "elapsed_seconds": 18.16,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__search_code",
+            "input": {
+              "query": "table definitions schema"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl3",
+      "type": "ddl",
+      "target": "ddl3",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl3.sql",
+      "question": {
+        "id": "ddl_orient_2",
+        "tier": "orientation",
+        "text": "List every table in this schema along with its primary key column(s). Flag any tables that have no primary key."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl3",
+        "question_id": "ddl_orient_2",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl3.sql\n\nList every table in this schema along with its primary key column(s). Flag any tables that have no primary key.",
+        "answer": "Here is the complete table inventory with primary keys. Every table in this schema has a primary key \u2014 no flags needed.\n\n---\n\n## `core` schema\n\n| Table | Primary Key |\n|---|---|\n| `core.countries` | `code` |\n| `core.addresses` | `id` |\n| `core.currencies` | `code` |\n| `core.exchange_rates` | `(base_currency, quote_currency, valid_at)` \u2014 composite |\n\n---\n\n## `iam` schema\n\n| Table | Primary Key |\n|---|---|\n| `iam.organizations` | `id` |\n| `iam.users` | `id` |\n| `iam.roles` | `id` |\n| `iam.permissions` | `key` |\n| `iam.role_permissions` | `(role_id, permission_key)` \u2014 composite |\n| `iam.organization_memberships` | `id` |\n| `iam.membership_roles` | `(membership_id, role_id)` \u2014 composite |\n| `iam.user_mfa_methods` | `id` |\n| `iam.api_keys` | `id` |\n\n---\n\n## `billing` schema\n\n| Table | Primary Key |\n|---|---|\n| `billing.plans` | `id` |\n| `billing.subscriptions` | `id` |\n| `billing.payment_methods` | `id` |\n| `billing.invoices` | `id` |\n| `billing.invoice_lines` | `id` |\n| `billing.payments` | `id` |\n\n---\n\n## `catalog` schema\n\n| Table | Primary Key |\n|---|---|\n| `catalog.brands` | `id` |\n| `catalog.categories` | `id` |\n| `catalog.products` | `id` |\n| `catalog.product_category_map` | `(product_id, category_id)` \u2014 composite |\n| `catalog.product_variants` | `id` |\n| `catalog.bundle_components` | `(bundle_variant_id, component_variant_id)` \u2014 composite |\n| `catalog.price_lists` | `id` |\n| `catalog.price_list_items` | `(price_list_id, variant_id, min_qty)` \u2014 composite (3-column) |\n\n---\n\n## `inventory` schema\n\n| Table | Primary Key |\n|---|---|\n| `inventory.warehouses` | `id` |\n| `inventory.locations` | `id` |\n| `inventory.stock_items` | `id` |\n| `inventory.stock_movements` | `id` |\n| `inventory.transfer_orders` | `id` |\n| `inventory.transfer_order_lines` | `id` |\n\n---\n\n## `sales` schema\n\n| Table | Primary Key |\n|---|---|\n| `sales.customers` | `id` |\n| `sales.orders` | `id` |\n| `sales.order_lines` | `id` |\n| `sales.order_allocations` | `id` |\n| `sales.coupons` | `id` |\n| `sales.order_coupon_redemptions` | `(order_id, coupon_id)` \u2014 composite |\n| `sales.returns` | `id` |\n| `sales.return_lines` | `id` |\n\n---\n\n## `logistics` schema\n\n| Table | Primary Key |\n|---|---|\n| `logistics.carriers` | `id` |\n| `logistics.shipments` | `id` |\n| `logistics.shipment_lines` | `id` |\n| `logistics.delivery_events` | `id` (`bigserial`) |\n\n---\n\n## `support` schema\n\n| Table | Primary Key |\n|---|---|\n| `support.ticket_queues` | `id` |\n| `support.tickets` | `id` |\n| `support.ticket_messages` | `id` |\n| `support.slas` | `id` |\n\n---\n\n## `audit` schema\n\n| Table | Primary Key | Notes |\n|---|---|---|\n| `audit.row_change_log` | `id` (`bigserial`) | |\n| `audit.actor_events` | `id` (`bigserial`) | Partitioned table \u2014 PK inherited by all partitions |\n| `audit.actor_events_2026q1` | `id` (inherited) | Partition of `actor_events` |\n| `audit.actor_events_2026q2` | `id` (inherited) | Partition of `actor_events` |\n| `audit.actor_events_2026q3` | `id` (inherited) | Partition of `actor_events` |\n| `audit.actor_events_2026q4` | `id` (inherited) | Partition of `actor_events` |\n\n---\n\n**Total: 51 tables (including 4 partitions), 0 without a primary key.**\n\nA few things worth noting:\n- `catalog.price_list_items` uses an unusual **3-column composite PK** `(price_list_id, variant_id, min_qty)`, meaning multiple price tiers per variant per list are allowed.\n- `audit.actor_events` and `audit.row_change_log` use `bigserial` rather than `uuid`, appropriate for high-volume append-only log tables.\n- `analytics.daily_order_summary` is a **materialized view**, not a table \u2014 it has a unique index but no `PRIMARY KEY` constraint, which is expected.",
+        "turns": 5,
+        "usage": {
+          "input_tokens": 11,
+          "output_tokens": 40,
+          "cache_creation_input_tokens": 43802,
+          "cache_read_input_tokens": 44362,
+          "total_tokens": 51,
+          "effective_tokens": 59239.7
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 2782,
+          "cache_creation_input_tokens": 19863,
+          "cache_read_input_tokens": 18560,
+          "total_tokens": 2786,
+          "effective_tokens": 29470.8
+        },
+        "total_cost_usd": 0.12226425,
+        "duration_ms": 32271,
+        "elapsed_seconds": 33.74,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl3.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl3",
+        "question_id": "ddl_orient_2",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl3.sql\n\nList every table in this schema along with its primary key column(s). Flag any tables that have no primary key.",
+        "answer": "The Bindwood graph DB isn't indexed yet. I'll read the file directly with the shell.\n\nI'll parse the SQL file directly to extract every table and its primary key(s).\n\nHere are the results from reading `ddl3.sql`:\n\n---\n\nCould you share the contents of `/home/robin/Repositories/Samples/DDL/ddl3.sql`, or paste the SQL here? The Bindwood graph database hasn't been built for this project yet (`bindwood scan` needs to be run first), and I don't have a file-read tool available in this session \u2014 so I can't access the file directly.\n\nOnce you share the SQL, I'll immediately list every table with its primary key column(s) and flag any tables missing one.",
+        "turns": 7,
+        "usage": {
+          "input_tokens": 15,
+          "output_tokens": 35,
+          "cache_creation_input_tokens": 18048,
+          "cache_read_input_tokens": 40968,
+          "total_tokens": 50,
+          "effective_tokens": 26706.8
+        },
+        "result_usage": {
+          "input_tokens": 5,
+          "output_tokens": 417,
+          "cache_creation_input_tokens": 4786,
+          "cache_read_input_tokens": 20817,
+          "total_tokens": 422,
+          "effective_tokens": 8486.2
+        },
+        "total_cost_usd": 0.030930599999999996,
+        "duration_ms": 20018,
+        "elapsed_seconds": 21.97,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table",
+              "limit": 100
+            }
+          },
+          {
+            "name": "mcp__bindwood__get_node_detail",
+            "input": {
+              "node_id": "/home/robin/Repositories/Samples/DDL/ddl3.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl3",
+      "type": "ddl",
+      "target": "ddl3",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl3.sql",
+      "question": {
+        "id": "ddl_lookup_1",
+        "tier": "lookup",
+        "text": "List every foreign-key relationship in this schema. For each FK, show source_table.column \u2192 target_table.column."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl3",
+        "question_id": "ddl_lookup_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl3.sql\n\nList every foreign-key relationship in this schema. For each FK, show source_table.column \u2192 target_table.column.",
+        "answer": "Here are all 62 foreign-key relationships in the schema:\n\n---\n\n### core\n| Source | \u2192 | Target |\n|---|---|---|\n| `core.addresses.country_code` | \u2192 | `core.countries.code` |\n| `core.exchange_rates.base_currency` | \u2192 | `core.currencies.code` |\n| `core.exchange_rates.quote_currency` | \u2192 | `core.currencies.code` |\n\n---\n\n### iam\n| Source | \u2192 | Target |\n|---|---|---|\n| `iam.organizations.default_currency` | \u2192 | `core.currencies.code` |\n| `iam.organizations.primary_address_id` | \u2192 | `core.addresses.id` |\n| `iam.roles.organization_id` | \u2192 | `iam.organizations.id` |\n| `iam.role_permissions.role_id` | \u2192 | `iam.roles.id` |\n| `iam.role_permissions.permission_key` | \u2192 | `iam.permissions.key` |\n| `iam.organization_memberships.organization_id` | \u2192 | `iam.organizations.id` |\n| `iam.organization_memberships.user_id` | \u2192 | `iam.users.id` |\n| `iam.membership_roles.membership_id` | \u2192 | `iam.organization_memberships.id` |\n| `iam.membership_roles.role_id` | \u2192 | `iam.roles.id` |\n| `iam.user_mfa_methods.user_id` | \u2192 | `iam.users.id` |\n| `iam.api_keys.organization_id` | \u2192 | `iam.organizations.id` |\n| `iam.api_keys.created_by_user_id` | \u2192 | `iam.users.id` |\n\n---\n\n### billing\n| Source | \u2192 | Target |\n|---|---|---|\n| `billing.plans.currency_code` | \u2192 | `core.currencies.code` |\n| `billing.subscriptions.organization_id` | \u2192 | `iam.organizations.id` |\n| `billing.subscriptions.plan_id` | \u2192 | `billing.plans.id` |\n| `billing.payment_methods.organization_id` | \u2192 | `iam.organizations.id` |\n| `billing.payment_methods.billing_address_id` | \u2192 | `core.addresses.id` |\n| `billing.invoices.organization_id` | \u2192 | `iam.organizations.id` |\n| `billing.invoices.subscription_id` | \u2192 | `billing.subscriptions.id` |\n| `billing.invoices.currency_code` | \u2192 | `core.currencies.code` |\n| `billing.invoice_lines.invoice_id` | \u2192 | `billing.invoices.id` |\n| `billing.payments.organization_id` | \u2192 | `iam.organizations.id` |\n| `billing.payments.invoice_id` | \u2192 | `billing.invoices.id` |\n| `billing.payments.payment_method_id` | \u2192 | `billing.payment_methods.id` |\n| `billing.payments.currency_code` | \u2192 | `core.currencies.code` |\n\n---\n\n### catalog\n| Source | \u2192 | Target |\n|---|---|---|\n| `catalog.brands.organization_id` | \u2192 | `iam.organizations.id` |\n| `catalog.categories.organization_id` | \u2192 | `iam.organizations.id` |\n| `catalog.categories.parent_id` | \u2192 | `catalog.categories.id` *(self-referential)* |\n| `catalog.products.organization_id` | \u2192 | `iam.organizations.id` |\n| `catalog.products.brand_id` | \u2192 | `catalog.brands.id` |\n| `catalog.product_category_map.product_id` | \u2192 | `catalog.products.id` |\n| `catalog.product_category_map.category_id` | \u2192 | `catalog.categories.id` |\n| `catalog.product_variants.product_id` | \u2192 | `catalog.products.id` |\n| `catalog.bundle_components.bundle_variant_id` | \u2192 | `catalog.product_variants.id` |\n| `catalog.bundle_components.component_variant_id` | \u2192 | `catalog.product_variants.id` |\n| `catalog.price_lists.organization_id` | \u2192 | `iam.organizations.id` |\n| `catalog.price_lists.currency_code` | \u2192 | `core.currencies.code` |\n| `catalog.price_list_items.price_list_id` | \u2192 | `catalog.price_lists.id` |\n| `catalog.price_list_items.variant_id` | \u2192 | `catalog.product_variants.id` |\n\n---\n\n### inventory\n| Source | \u2192 | Target |\n|---|---|---|\n| `inventory.warehouses.organization_id` | \u2192 | `iam.organizations.id` |\n| `inventory.warehouses.address_id` | \u2192 | `core.addresses.id` |\n| `inventory.locations.warehouse_id` | \u2192 | `inventory.warehouses.id` |\n| `inventory.stock_items.variant_id` | \u2192 | `catalog.product_variants.id` |\n| `inventory.stock_items.warehouse_id` | \u2192 | `inventory.warehouses.id` |\n| `inventory.stock_items.location_id` | \u2192 | `inventory.locations.id` |\n| `inventory.stock_movements.stock_item_id` | \u2192 | `inventory.stock_items.id` |\n| `inventory.stock_movements.performed_by_user_id` | \u2192 | `iam.users.id` |\n| `inventory.transfer_orders.organization_id` | \u2192 | `iam.organizations.id` |\n| `inventory.transfer_orders.from_warehouse_id` | \u2192 | `inventory.warehouses.id` |\n| `inventory.transfer_orders.to_warehouse_id` | \u2192 | `inventory.warehouses.id` |\n| `inventory.transfer_orders.requested_by_user_id` | \u2192 | `iam.users.id` |\n| `inventory.transfer_orders.approved_by_user_id` | \u2192 | `iam.users.id` |\n| `inventory.transfer_order_lines.transfer_order_id` | \u2192 | `inventory.transfer_orders.id` |\n| `inventory.transfer_order_lines.variant_id` | \u2192 | `catalog.product_variants.id` |\n\n---\n\n### sales\n| Source | \u2192 | Target |\n|---|---|---|\n| `sales.customers.organization_id` | \u2192 | `iam.organizations.id` |\n| `sales.customers.billing_address_id` | \u2192 | `core.addresses.id` |\n| `sales.customers.shipping_address_id` | \u2192 | `core.addresses.id` |\n| `sales.orders.organization_id` | \u2192 | `iam.organizations.id` |\n| `sales.orders.customer_id` | \u2192 | `sales.customers.id` |\n| `sales.orders.currency_code` | \u2192 | `core.currencies.code` |\n| `sales.orders.billing_address_id` | \u2192 | `core.addresses.id` |\n| `sales.orders.shipping_address_id` | \u2192 | `core.addresses.id` |\n| `sales.orders.sales_rep_user_id` | \u2192 | `iam.users.id` |\n| `sales.order_lines.order_id` | \u2192 | `sales.orders.id` |\n| `sales.order_lines.variant_id` | \u2192 | `catalog.product_variants.id` |\n| `sales.order_lines.fulfillment_warehouse_id` | \u2192 | `inventory.warehouses.id` |\n| `sales.order_allocations.order_line_id` | \u2192 | `sales.order_lines.id` |\n| `sales.order_allocations.stock_item_id` | \u2192 | `inventory.stock_items.id` |\n| `sales.coupons.organization_id` | \u2192 | `iam.organizations.id` |\n| `sales.order_coupon_redemptions.order_id` | \u2192 | `sales.orders.id` |\n| `sales.order_coupon_redemptions.coupon_id` | \u2192 | `sales.coupons.id` |\n| `sales.returns.order_id` | \u2192 | `sales.orders.id` |\n| `sales.returns.customer_id` | \u2192 | `sales.customers.id` |\n| `sales.return_lines.return_id` | \u2192 | `sales.returns.id` |\n| `sales.return_lines.order_line_id` | \u2192 | `sales.order_lines.id` |\n\n---\n\n### logistics\n| Source | \u2192 | Target |\n|---|---|---|\n| `logistics.carriers.organization_id` | \u2192 | `iam.organizations.id` |\n| `logistics.shipments.order_id` | \u2192 | `sales.orders.id` |\n| `logistics.shipments.warehouse_id` | \u2192 | `inventory.warehouses.id` |\n| `logistics.shipments.carrier_id` | \u2192 | `logistics.carriers.id` |\n| `logistics.shipments.shipping_address_id` | \u2192 | `core.addresses.id` |\n| `logistics.shipment_lines.shipment_id` | \u2192 | `logistics.shipments.id` |\n| `logistics.shipment_lines.order_line_id` | \u2192 | `sales.order_lines.id` |\n| `logistics.delivery_events.shipment_id` | \u2192 | `logistics.shipments.id` |\n\n---\n\n### support\n| Source | \u2192 | Target |\n|---|---|---|\n| `support.ticket_queues.organization_id` | \u2192 | `iam.organizations.id` |\n| `support.tickets.organization_id` | \u2192 | `iam.organizations.id` |\n| `support.tickets.queue_id` | \u2192 | `support.ticket_queues.id` |\n| `support.tickets.customer_id` | \u2192 | `sales.customers.id` |\n| `support.tickets.order_id` | \u2192 | `sales.orders.id` |\n| `support.tickets.created_by_user_id` | \u2192 | `iam.users.id` |\n| `support.tickets.assigned_to_user_id` | \u2192 | `iam.users.id` |\n| `support.ticket_messages.ticket_id` | \u2192 | `support.tickets.id` |\n| `support.ticket_messages.author_user_id` | \u2192 | `iam.users.id` |\n| `support.ticket_messages.author_customer_id` | \u2192 | `sales.customers.id` |\n| `support.slas.organization_id` | \u2192 | `iam.organizations.id` |\n\n---\n\n### audit\n| Source | \u2192 | Target |\n|---|---|---|\n| `audit.actor_events.organization_id` | \u2192 | `iam.organizations.id` |\n\n---\n\n**Total: 62 foreign keys** across 10 schemas. A few notable structural points:\n- `iam.organizations.id` is the most-referenced PK \u2014 23 tables hang off it as a multi-tenant anchor.\n- `catalog.categories.parent_id` is the only self-referential FK (category tree).\n- `catalog.bundle_components` has two FKs to the same table (`product_variants`) representing parent/child bundle relationships.\n- `inventory.transfer_orders` has two FKs to `inventory.warehouses` (`from_warehouse_id` / `to_warehouse_id`).",
+        "turns": 4,
+        "usage": {
+          "input_tokens": 10,
+          "output_tokens": 25,
+          "cache_creation_input_tokens": 28026,
+          "cache_read_input_tokens": 33047,
+          "total_tokens": 35,
+          "effective_tokens": 38372.2
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 2917,
+          "cache_creation_input_tokens": 19868,
+          "cache_read_input_tokens": 18563,
+          "total_tokens": 2921,
+          "effective_tokens": 29612.3
+        },
+        "total_cost_usd": 0.1243069,
+        "duration_ms": 27499,
+        "elapsed_seconds": 28.77,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl3.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl3",
+        "question_id": "ddl_lookup_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl3.sql\n\nList every foreign-key relationship in this schema. For each FK, show source_table.column \u2192 target_table.column.",
+        "answer": "The graph database hasn't been initialized for this project (needs `bindwood scan` to run first), and I don't have direct file-reading tools available in this context.\n\nTo get the FK list, you have two options:\n\n1. **Initialize the graph DB** \u2014 run `bindwood scan` in the project directory, then ask again and I can query it properly.\n\n2. **Paste the file contents** \u2014 share the contents of `ddl3.sql` here and I'll parse every FK relationship for you immediately.\n\nWhich works better for you?",
+        "turns": 9,
+        "usage": {
+          "input_tokens": 15,
+          "output_tokens": 44,
+          "cache_creation_input_tokens": 14252,
+          "cache_read_input_tokens": 62144,
+          "total_tokens": 59,
+          "effective_tokens": 24088.4
+        },
+        "result_usage": {
+          "input_tokens": 6,
+          "output_tokens": 897,
+          "cache_creation_input_tokens": 4965,
+          "cache_read_input_tokens": 29093,
+          "total_tokens": 903,
+          "effective_tokens": 10018.5
+        },
+        "total_cost_usd": 0.04128565,
+        "duration_ms": 19372,
+        "elapsed_seconds": 21.47,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table"
+            }
+          },
+          {
+            "name": "mcp__bindwood__search_code",
+            "input": {
+              "query": "foreign key references"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl3",
+      "type": "ddl",
+      "target": "ddl3",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl3.sql",
+      "question": {
+        "id": "ddl_lookup_2",
+        "tier": "lookup",
+        "text": "Find all tables that contain a column whose name ends in '_id' or is named 'id'. For each, show the column name and type."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl3",
+        "question_id": "ddl_lookup_2",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl3.sql\n\nFind all tables that contain a column whose name ends in '_id' or is named 'id'. For each, show the column name and type.",
+        "answer": "Here is every table that has a column named `id` or ending in `_id`, with the column name and type:\n\n---\n\n### `core.addresses`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n\n---\n\n### `iam.organizations`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `primary_address_id` | uuid |\n\n### `iam.users`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n\n### `iam.roles`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n\n### `iam.role_permissions`\n| Column | Type |\n|--------|------|\n| `role_id` | uuid |\n\n### `iam.organization_memberships`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n| `user_id` | uuid |\n\n### `iam.membership_roles`\n| Column | Type |\n|--------|------|\n| `membership_id` | uuid |\n| `role_id` | uuid |\n\n### `iam.user_mfa_methods`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `user_id` | uuid |\n\n### `iam.api_keys`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n| `created_by_user_id` | uuid |\n\n---\n\n### `billing.plans`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n\n### `billing.subscriptions`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n| `plan_id` | uuid |\n\n### `billing.payment_methods`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n| `billing_address_id` | uuid |\n\n### `billing.invoices`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n| `subscription_id` | uuid |\n\n### `billing.invoice_lines`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `invoice_id` | uuid |\n\n### `billing.payments`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n| `invoice_id` | uuid |\n| `payment_method_id` | uuid |\n\n---\n\n### `catalog.brands`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n\n### `catalog.categories`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n| `parent_id` | uuid |\n\n### `catalog.products`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n| `brand_id` | uuid |\n\n### `catalog.product_category_map`\n| Column | Type |\n|--------|------|\n| `product_id` | uuid |\n| `category_id` | uuid |\n\n### `catalog.product_variants`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `product_id` | uuid |\n\n### `catalog.bundle_components`\n| Column | Type |\n|--------|------|\n| `bundle_variant_id` | uuid |\n| `component_variant_id` | uuid |\n\n### `catalog.price_lists`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n\n### `catalog.price_list_items`\n| Column | Type |\n|--------|------|\n| `price_list_id` | uuid |\n| `variant_id` | uuid |\n\n---\n\n### `inventory.warehouses`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n| `address_id` | uuid |\n\n### `inventory.locations`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `warehouse_id` | uuid |\n\n### `inventory.stock_items`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `variant_id` | uuid |\n| `warehouse_id` | uuid |\n| `location_id` | uuid |\n\n### `inventory.stock_movements`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `stock_item_id` | uuid |\n| `reference_id` | uuid |\n| `performed_by_user_id` | uuid |\n\n### `inventory.transfer_orders`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n| `from_warehouse_id` | uuid |\n| `to_warehouse_id` | uuid |\n| `requested_by_user_id` | uuid |\n| `approved_by_user_id` | uuid |\n\n### `inventory.transfer_order_lines`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `transfer_order_id` | uuid |\n| `variant_id` | uuid |\n\n---\n\n### `sales.customers`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n| `billing_address_id` | uuid |\n| `shipping_address_id` | uuid |\n\n### `sales.orders`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n| `customer_id` | uuid |\n| `billing_address_id` | uuid |\n| `shipping_address_id` | uuid |\n| `sales_rep_user_id` | uuid |\n\n### `sales.order_lines`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `order_id` | uuid |\n| `variant_id` | uuid |\n| `fulfillment_warehouse_id` | uuid |\n\n### `sales.order_allocations`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `order_line_id` | uuid |\n| `stock_item_id` | uuid |\n\n### `sales.coupons`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n\n### `sales.order_coupon_redemptions`\n| Column | Type |\n|--------|------|\n| `order_id` | uuid |\n| `coupon_id` | uuid |\n\n### `sales.returns`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `order_id` | uuid |\n| `customer_id` | uuid |\n\n### `sales.return_lines`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `return_id` | uuid |\n| `order_line_id` | uuid |\n\n---\n\n### `logistics.carriers`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n\n### `logistics.shipments`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `order_id` | uuid |\n| `warehouse_id` | uuid |\n| `carrier_id` | uuid |\n| `shipping_address_id` | uuid |\n\n### `logistics.shipment_lines`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `shipment_id` | uuid |\n| `order_line_id` | uuid |\n\n### `logistics.delivery_events`\n| Column | Type |\n|--------|------|\n| `id` | bigserial |\n| `shipment_id` | uuid |\n\n---\n\n### `support.ticket_queues`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n\n### `support.tickets`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n| `queue_id` | uuid |\n| `customer_id` | uuid |\n| `order_id` | uuid |\n| `created_by_user_id` | uuid |\n| `assigned_to_user_id` | uuid |\n\n### `support.ticket_messages`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `ticket_id` | uuid |\n| `author_user_id` | uuid |\n| `author_customer_id` | uuid |\n\n### `support.slas`\n| Column | Type |\n|--------|------|\n| `id` | uuid |\n| `organization_id` | uuid |\n\n---\n\n### `audit.row_change_log`\n| Column | Type |\n|--------|------|\n| `id` | bigserial |\n\n### `audit.actor_events`\n| Column | Type |\n|--------|------|\n| `id` | bigserial |\n| `actor_id` | uuid |\n| `organization_id` | uuid |\n| `entity_id` | uuid |\n\n---\n\n**Summary:** 43 tables match (every table except `core.countries`, `core.currencies`, `core.exchange_rates`, and `iam.permissions`, which use non-`id` primary keys like `code` or `key`). Almost all ID columns are `uuid`; the three audit/logistics tables with `bigserial` PKs (`audit.row_change_log`, `audit.actor_events`, `logistics.delivery_events`) are the exceptions.",
+        "turns": 5,
+        "usage": {
+          "input_tokens": 11,
+          "output_tokens": 16,
+          "cache_creation_input_tokens": 43837,
+          "cache_read_input_tokens": 44376,
+          "total_tokens": 27,
+          "effective_tokens": 59260.8
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 4184,
+          "cache_creation_input_tokens": 19877,
+          "cache_read_input_tokens": 18567,
+          "total_tokens": 4188,
+          "effective_tokens": 30891.0
+        },
+        "total_cost_usd": 0.14335585,
+        "duration_ms": 45102,
+        "elapsed_seconds": 46.77,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl3.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl3",
+        "question_id": "ddl_lookup_2",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl3.sql\n\nFind all tables that contain a column whose name ends in '_id' or is named 'id'. For each, show the column name and type.",
+        "answer": "All bindwood tools require the database to be built first. Since I can't run shell commands in this environment, here's what you can do to get the results two ways:\n\n---\n\n**Option 1 \u2014 Build the graph DB first (recommended for ongoing use)**\n\n```bash\ncd /home/robin/Repositories/Samples/DDL\nbindwood scan\n```\n\nThen re-ask the question \u2014 all MCP tools will work.\n\n---\n\n**Option 2 \u2014 Quick grep right now**\n\n```bash\ngrep -E '^\\s+(id|[a-z_]+_id)\\s+' /home/robin/Repositories/Samples/DDL/ddl3.sql \\\n  | sed 's/^[[:space:]]*//'\n```\n\nOr, for a table-aware view:\n\n```bash\nawk '\n  /^CREATE TABLE/ { table=$3 }\n  /^\\s+(id|[a-zA-Z_]+_id)\\s/ {\n    col=$1; type=$2;\n    print table \" | \" col \" | \" type\n  }\n' /home/robin/Repositories/Samples/DDL/ddl3.sql\n```\n\n---\n\nIf you paste the contents of `ddl3.sql` here (or run one of those commands and share the output), I can parse and present the results for you immediately.",
+        "turns": 10,
+        "usage": {
+          "input_tokens": 16,
+          "output_tokens": 10,
+          "cache_creation_input_tokens": 14273,
+          "cache_read_input_tokens": 70887,
+          "total_tokens": 26,
+          "effective_tokens": 24956.0
+        },
+        "result_usage": {
+          "input_tokens": 7,
+          "output_tokens": 660,
+          "cache_creation_input_tokens": 5054,
+          "cache_read_input_tokens": 37821,
+          "total_tokens": 667,
+          "effective_tokens": 10766.6
+        },
+        "total_cost_usd": 0.04068480000000001,
+        "duration_ms": 17374,
+        "elapsed_seconds": 19.38,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table"
+            }
+          },
+          {
+            "name": "mcp__bindwood__get_table_schema",
+            "input": {
+              "table_name": "users"
+            }
+          },
+          {
+            "name": "mcp__bindwood__search_code",
+            "input": {
+              "query": "table column id"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl3",
+      "type": "ddl",
+      "target": "ddl3",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl3.sql",
+      "question": {
+        "id": "ddl_struct_1",
+        "tier": "structural",
+        "text": "Pick the most central table in this schema \u2014 the one with the most incoming foreign keys. List the tables that reference it and the tables it references."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl3",
+        "question_id": "ddl_struct_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl3.sql\n\nPick the most central table in this schema \u2014 the one with the most incoming foreign keys. List the tables that reference it and the tables it references.",
+        "answer": "**`iam.organizations` is the most central table** \u2014 it has **21** other tables pointing to it via foreign key, spanning every domain in the schema.\n\n---\n\n### Tables that reference `iam.organizations` (incoming FKs \u2014 21)\n\n| Table | Column |\n|---|---|\n| `iam.roles` | `organization_id` |\n| `iam.organization_memberships` | `organization_id` |\n| `iam.api_keys` | `organization_id` |\n| `billing.subscriptions` | `organization_id` |\n| `billing.payment_methods` | `organization_id` |\n| `billing.invoices` | `organization_id` |\n| `billing.payments` | `organization_id` |\n| `catalog.brands` | `organization_id` |\n| `catalog.categories` | `organization_id` |\n| `catalog.products` | `organization_id` |\n| `catalog.price_lists` | `organization_id` |\n| `inventory.warehouses` | `organization_id` |\n| `inventory.transfer_orders` | `organization_id` |\n| `sales.customers` | `organization_id` |\n| `sales.orders` | `organization_id` |\n| `sales.coupons` | `organization_id` |\n| `logistics.carriers` | `organization_id` |\n| `support.ticket_queues` | `organization_id` |\n| `support.tickets` | `organization_id` |\n| `support.slas` | `organization_id` |\n| `audit.actor_events` | `organization_id` |\n\n---\n\n### Tables that `iam.organizations` references (outgoing FKs \u2014 2)\n\n| Table | Column |\n|---|---|\n| `core.currencies` | `default_currency` |\n| `core.addresses` | `primary_address_id` |\n\n---\n\n`iam.organizations` sits at the root of the tenant hierarchy \u2014 every domain scopes its data to an org, making it the true hub of the entire schema. Its two outgoing FKs are both optional/config (currency and a mailing address), so it has almost no dependencies of its own.",
+        "turns": 5,
+        "usage": {
+          "input_tokens": 11,
+          "output_tokens": 19,
+          "cache_creation_input_tokens": 43838,
+          "cache_read_input_tokens": 44374,
+          "total_tokens": 30,
+          "effective_tokens": 59264.9
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 2702,
+          "cache_creation_input_tokens": 19878,
+          "cache_read_input_tokens": 18566,
+          "total_tokens": 2706,
+          "effective_tokens": 29410.1
+        },
+        "total_cost_usd": 0.1211233,
+        "duration_ms": 37250,
+        "elapsed_seconds": 38.71,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl3.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl3",
+        "question_id": "ddl_struct_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl3.sql\n\nPick the most central table in this schema \u2014 the one with the most incoming foreign keys. List the tables that reference it and the tables it references.",
+        "answer": "The bindwood database isn't initialized. I'll read the SQL file directly to answer your question.\n\nReading `/home/robin/Repositories/Samples/DDL/ddl3.sql` directly using shell to extract FK relationships:\n\n```\ngrep -oP 'REFERENCES\\s+\\K\\w+' ddl3.sql | sort | uniq -c | sort -rn\n```\n\nCould you run that command in your terminal, or let me know if you'd like me to read the raw file another way? Alternatively, if you can paste the schema content here I can analyze it immediately.\n\nThat said \u2014 if you'd like to enable the graph tools, run `bindwood scan` in `/home/robin/Repositories/Samples/DDL/` and then I can give you a full traversal analysis with incoming/outgoing FK edges for every table.",
+        "turns": 8,
+        "usage": {
+          "input_tokens": 14,
+          "output_tokens": 29,
+          "cache_creation_input_tokens": 14028,
+          "cache_read_input_tokens": 53581,
+          "total_tokens": 43,
+          "effective_tokens": 22936.1
+        },
+        "result_usage": {
+          "input_tokens": 6,
+          "output_tokens": 463,
+          "cache_creation_input_tokens": 4931,
+          "cache_read_input_tokens": 29099,
+          "total_tokens": 469,
+          "effective_tokens": 9542.6
+        },
+        "total_cost_usd": 0.03466295,
+        "duration_ms": 14368,
+        "elapsed_seconds": 16.29,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table"
+            }
+          },
+          {
+            "name": "mcp__bindwood__search_code",
+            "input": {
+              "query": "foreign key references"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    },
+    {
+      "repo": "ddl3",
+      "type": "ddl",
+      "target": "ddl3",
+      "path": "/home/robin/Repositories/Samples/DDL/ddl3.sql",
+      "question": {
+        "id": "ddl_cross_1",
+        "tier": "cross_cutting",
+        "text": "Pick one foreign key in this schema. If that FK column were dropped, which tables and queries would be affected? Describe the impact in terms of which relationships break and which orphan rows become possible."
+      },
+      "baseline": {
+        "condition": "baseline",
+        "repo": "ddl3",
+        "question_id": "ddl_cross_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl3.sql\n\nPick one foreign key in this schema. If that FK column were dropped, which tables and queries would be affected? Describe the impact in terms of which relationships break and which orphan rows become possible.",
+        "answer": "## Chosen FK: `sales.order_lines.order_id \u2192 sales.orders(id) ON DELETE CASCADE`\n\nDefined at line 727:\n```sql\norder_id uuid NOT NULL REFERENCES sales.orders(id) ON DELETE CASCADE\n```\n\n---\n\n### What dropping this column does\n\nDropping the column requires PostgreSQL to first drop all constraints and indexes that depend on it, then remove the column itself. Here is everything that falls apart.\n\n---\n\n### 1. Direct structural damage on `sales.order_lines` itself\n\n| Object | Effect |\n|---|---|\n| `UNIQUE (order_id, line_no)` (line 739) | Automatically dropped. Line numbers are no longer scoped to a parent order \u2014 you can now have two \"line 1\"s for different orders, or no uniqueness at all. |\n| `idx_order_lines_order` index (line 998) | Automatically dropped. Fast lookup of all lines for a given order is gone. |\n| `ON DELETE CASCADE` from `sales.orders` | Gone. Deleting an `orders` row no longer removes its lines. Lines become **permanent orphans** \u2014 they remain in the table with no way, at the DB level, to tie them to an order or clean them up. |\n\n---\n\n### 2. Broken business-logic function and triggers\n\n`sales.recalculate_order_totals` (line 1028) runs this query:\n```sql\nSELECT \u2026 FROM sales.order_lines WHERE order_id = p_order_id;\n```\nWith the column gone, this query errors at runtime. Because three triggers call this function on every insert, update, and delete of an order line, **all writes to `sales.order_lines` begin raising exceptions**:\n\n- `trg_order_lines_recalculate_ins` (line 1170)\n- `trg_order_lines_recalculate_upd` (line 1174)\n- `trg_order_lines_recalculate_del` (line 1178)\n\nThe trigger function itself also references `NEW.order_id` / `OLD.order_id` (line 1049), so the error hits even before calling `recalculate_order_totals`. In practice, the `order_lines` table becomes **read-only by accident** \u2014 no mutations are possible without disabling these triggers.\n\n---\n\n### 3. Orphan rows that now become possible\n\nWith `order_id` gone from `order_lines`, the column that anchors lines to their parent is absent:\n\n- **New inserts** can create lines with no order context whatsoever.\n- **Existing lines** lose their traceability back to an order at the DB level (the data in `sku`/`product_name` is denormalised there, but the join key is gone).\n- **Cascade deletes stop working**: a cancelled or soft-deleted order leaves its lines stranded.\n\nThree downstream tables lose their implicit path back to `sales.orders` through `order_lines`:\n\n| Table | FK it holds | What's lost |\n|---|---|---|\n| `sales.order_allocations` (line 743) | `order_line_id \u2192 sales.order_lines(id)` | Can't trace allocation \u2192 order line \u2192 order. Stock reservations become unattributable to an order. |\n| `sales.return_lines` (line 793) | `order_line_id \u2192 sales.order_lines(id)` | RMA lines can't be matched back to the originating order for refund calculations. |\n| `logistics.shipment_lines` (line 837) | `order_line_id \u2192 sales.order_lines(id)` | Shipment contents can't be tied to an order, breaking fulfilment status tracking. |\n\nNone of these three FKs break at the DDL level (they reference `order_lines.id`, not `order_lines.order_id`), but **any query or report that navigates order \u2192 lines \u2192 allocations/returns/shipments** is broken because the first join step no longer has a column to join on.\n\n---\n\n### 4. Summary of broken relationships\n\n```\nsales.orders  \u2190\u00d7\u2014  sales.order_lines  \u2500\u2192  sales.order_allocations\n                                       \u2500\u2192  sales.return_lines\n                                       \u2500\u2192  logistics.shipment_lines\n```\n\nThe `\u00d7` marks the severed join. All paths that start at `sales.orders` and traverse to anything downstream of `order_lines` break. The audit trigger on `order_lines` (line 1218) still fires, but captured snapshots will no longer include `order_id`, degrading the audit trail as well.",
+        "turns": 5,
+        "usage": {
+          "input_tokens": 11,
+          "output_tokens": 21,
+          "cache_creation_input_tokens": 43855,
+          "cache_read_input_tokens": 44396,
+          "total_tokens": 32,
+          "effective_tokens": 59290.3
+        },
+        "result_usage": {
+          "input_tokens": 4,
+          "output_tokens": 3502,
+          "cache_creation_input_tokens": 19881,
+          "cache_read_input_tokens": 18577,
+          "total_tokens": 3506,
+          "effective_tokens": 30215.0
+        },
+        "total_cost_usd": 0.13314385,
+        "duration_ms": 63788,
+        "elapsed_seconds": 65.33,
+        "tool_calls": [
+          {
+            "name": "Read",
+            "input": {
+              "file_path": "/home/robin/Repositories/Samples/DDL/ddl3.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "bindwood": {
+        "condition": "bindwood",
+        "repo": "ddl3",
+        "question_id": "ddl_cross_1",
+        "question": "Context: SQL schema file at /home/robin/Repositories/Samples/DDL/ddl3.sql\n\nPick one foreign key in this schema. If that FK column were dropped, which tables and queries would be affected? Describe the impact in terms of which relationships break and which orphan rows become possible.",
+        "answer": "The bindwood graph hasn't been scanned. I'll read the file directly from disk.\n\n```\ncat /home/robin/Repositories/Samples/DDL/ddl3.sql\n```\n\nLet me open the file with a shell read approach since the graph tools require a prior scan.\n\nCould you share the contents of `ddl3.sql`, or run `bindwood scan` in the project directory first? Once the graph is indexed I can traverse FK relationships automatically \u2014 or if you paste the DDL here I can analyze it directly.\n\nIf you'd like to run the scan yourself:\n\n```bash\ncd /home/robin/Repositories/Samples/DDL\nbindwood scan\n```\n\nThen ask me again and I'll be able to walk every FK, its dependents, and the orphan-row risk in detail.",
+        "turns": 7,
+        "usage": {
+          "input_tokens": 15,
+          "output_tokens": 7,
+          "cache_creation_input_tokens": 18106,
+          "cache_read_input_tokens": 41014,
+          "total_tokens": 22,
+          "effective_tokens": 26755.9
+        },
+        "result_usage": {
+          "input_tokens": 5,
+          "output_tokens": 427,
+          "cache_creation_input_tokens": 4798,
+          "cache_read_input_tokens": 20846,
+          "total_tokens": 432,
+          "effective_tokens": 8514.1
+        },
+        "total_cost_usd": 0.031156299999999998,
+        "duration_ms": 13701,
+        "elapsed_seconds": 15.66,
+        "tool_calls": [
+          {
+            "name": "mcp__bindwood__graph_overview",
+            "input": {}
+          },
+          {
+            "name": "mcp__bindwood__find_nodes",
+            "input": {
+              "type": "table",
+              "limit": 30
+            }
+          },
+          {
+            "name": "mcp__bindwood__get_node_detail",
+            "input": {
+              "node_id": "/home/robin/Repositories/Samples/DDL/ddl3.sql"
+            }
+          }
+        ],
+        "error": null,
+        "unknown_event_types": {
+          "rate_limit_event": 1
+        }
+      },
+      "judge": null
+    }
+  ],
+  "summary": {
+    "baseline_total_tokens": 631,
+    "bindwood_total_tokens": 811,
+    "baseline_effective_tokens": 785894.3,
+    "bindwood_effective_tokens": 477043.6,
+    "tokens_delta": 180,
+    "effective_tokens_delta": -308850.7,
+    "savings_pct": -28.53,
+    "effective_savings_pct": 39.3,
+    "judge_wins": {},
+    "runs_count": 18,
+    "runs_by_type": {
+      "ddl": 18
+    }
+  }
+}

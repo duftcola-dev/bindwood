@@ -8,7 +8,7 @@ from pathlib import Path
 
 DEFAULT_OLLAMA_URL = "http://localhost:11434"
 DEFAULT_EMBEDDING_MODEL = "nomic-embed-text"
-DEFAULT_AUXILIARY_MODEL = "gemma4:e4b"
+DEFAULT_AUXILIARY_MODEL = "qwen2.5-coder:1.5b"
 
 
 def load_raw_config(config_path: str | Path) -> dict:

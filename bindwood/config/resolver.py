@@ -7,13 +7,12 @@ Priority (highest first) for both the config file and the DB path:
     3. User config dir (``$XDG_CONFIG_HOME/bindwood/config.json`` or
        ``%APPDATA%\\bindwood\\config.json`` on Windows)
     4. ``./bindwood.json`` in the current working directory
-    5. The in-repo default (for source checkouts)
 
 The CLI writes exclusively to the user config dir — humans shouldn't
 hand-edit config files, they should go through ``bindwood init``,
-``bindwood add``, ``bindwood delete``. The cwd / in-repo fallbacks
-exist for source checkouts and for power users who pin a repo-local
-config via ``BINDWOOD_CONFIG``.
+``bindwood add``, ``bindwood delete``. The cwd fallback exists for
+power users who pin a repo-local config via ``BINDWOOD_CONFIG`` or
+drop a ``bindwood.json`` next to the project they're scanning.
 
 Legacy ``gtg.json`` / ``GTG_CONFIG`` / ``GTG_DB`` names are still
 accepted for one deprecation cycle so existing installs don't break.
@@ -36,7 +35,6 @@ LEGACY_CONFIG_FILENAME = "gtg.json"
 LEGACY_CONFIG_ENV = "GTG_CONFIG"
 LEGACY_DB_ENV = "GTG_DB"
 LEGACY_API_KEY_ENV = "GTG_API_KEY"
-LEGACY_REPO_CONFIG = Path("bindwood") / "config" / "config.json"
 
 DEFAULT_DB_REL = Path("graph") / "code_graph.db"
 
@@ -70,7 +68,6 @@ def resolve_config_path(explicit: str | Path | None = None) -> Path | None:
     candidates.append(user_config_path())
     candidates.append(Path.cwd() / CONFIG_FILENAME)
     candidates.append(Path.cwd() / LEGACY_CONFIG_FILENAME)
-    candidates.append(Path.cwd() / LEGACY_REPO_CONFIG)
 
     for p in candidates:
         if p.is_file():

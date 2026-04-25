@@ -50,7 +50,7 @@ The CLI is installed as `bindwood`; you can also invoke it via `python -m bindwo
 bindwood --help
 ```
 
-You should see the top-level commands: `init`, `add`, `list`, `delete`, `apikey`, `scan`, `query`, `mcp`, `serve`, `doctor`.
+You should see the top-level commands: `init`, `add`, `list`, `delete`, `apikey`, `scan`, `query`, `mcp`, `mcp-path`, `serve`, `doctor`, `reset`.
 
 ## Install Ollama (optional)
 
@@ -59,12 +59,12 @@ Ollama powers two independent features. Neither is required for the structural g
 | Model | Purpose | If missing |
 |-------|---------|------------|
 | `nomic-embed-text` | Vector embeddings — enables `search_code` and `context` queries | Semantic search unavailable; structural queries still work |
-| `gemma4:e4b` | Per-node summaries shown in query output and search results | Summaries skipped; everything else still works |
+| `qwen2.5-coder:1.5b` | Per-node summaries shown in query output and search results | Summaries skipped; everything else still works |
 
 ```bash
 # https://ollama.ai/download
 ollama pull nomic-embed-text
-ollama pull gemma4:e4b
+ollama pull qwen2.5-coder:1.5b
 ```
 
 Both models are auto-pulled during `bindwood scan` if missing and Ollama is reachable. Pull them manually beforehand to avoid the delay on first scan.

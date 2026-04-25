@@ -134,17 +134,27 @@ def generate_embeddings(
     base_url: str,
     model: str,
     batch_size: int = 32,
+    target_name: str | None = None,
 ) -> int:
     """Generate embeddings for all embeddable nodes.
 
     A node is embeddable if we can compose a non-empty search key for it
     (see _compose_embed_text). The embedding input is NOT the raw body.
+
+    When ``target_name`` is given, only rows belonging to that target are
+    embedded — used by the per-target rescan flow so we don't collide with
+    the ``vec_embeddings`` primary key on unchanged targets.
     """
-    cursor = conn.execute(
+    sql = (
         "SELECT id, target, type, name, source_text, summary, properties "
         "FROM nodes "
         "WHERE source_text IS NOT NULL AND source_text != ''"
     )
+    params: tuple = ()
+    if target_name is not None:
+        sql += " AND target = ?"
+        params = (target_name,)
+    cursor = conn.execute(sql, params)
     rows = cursor.fetchall()
 
     if not rows:
