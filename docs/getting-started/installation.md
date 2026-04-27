@@ -13,15 +13,15 @@ Optional, for embeddings and summaries:
 
 Installed automatically by `uv` or `pip`:
 
-| Package | Purpose |
-|---------|---------|
-| `tree-sitter` | Core AST parsing engine |
-| `tree-sitter-javascript` | JavaScript grammar (`.js`, `.jsx`, `.mjs`, `.cjs`) |
-| `tree-sitter-typescript` | TypeScript grammar (`.ts`, `.tsx`, `.mts`) |
-| `tree-sitter-python` | Python grammar (`.py`) |
-| `sqlglot` | DDL/SQL parsing for the database extractor |
-| `sqlite-vec` | Vector similarity search extension for SQLite |
-| `mcp` | Model Context Protocol SDK for Claude integration |
+| Package                   | Purpose                                               |
+|---------------------------|-------------------------------------------------------|
+| `tree-sitter`             | Core AST parsing engine                               |
+| `tree-sitter-javascript`  | JavaScript grammar (`.js`, `.jsx`, `.mjs`, `.cjs`)    |
+| `tree-sitter-typescript`  | TypeScript grammar (`.ts`, `.tsx`, `.mts`)            |
+| `tree-sitter-python`      | Python grammar (`.py`)                                |
+| `sqlglot`                 | DDL/SQL parsing for the database extractor            |
+| `sqlite-vec`              | Vector similarity search extension for SQLite         |
+| `mcp`                     | Model Context Protocol SDK for Claude integration     |
 
 ## Install
 

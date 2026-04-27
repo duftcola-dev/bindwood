@@ -51,8 +51,6 @@ bindwood query stats
 bindwood query search "authentication login"
 bindwood query find --type function --name login
 
-# Start the MCP server (for Claude Desktop / Claude Code)
-bindwood mcp
 ```
 
 > Config files are managed through the CLI (`bindwood init`, `add`, `list`, `delete`) — you shouldn't need to hand-edit JSON.
